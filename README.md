@@ -21,6 +21,5 @@ mc [command]
 ### Install
 
 ```bash
-make
 make install
 ```
