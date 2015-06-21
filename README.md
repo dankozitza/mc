@@ -5,17 +5,17 @@ mc is a tool for managing c++ source code.
 ### Usage:
 
 ```bash
-mc [command]
+mc command [arguments]
 ```
 
 ### Commands:
 
 ```text
-   help     - show this help message
-   makefile - creates a make file with vfnmake
-   build    - runs vfnmake then make
-   rebuild  - runs make clean, vfnmake, then make
-   run      - runs vfnmake then make run
+   help     - Show this help message
+   makefile - Creates a make file by calling vfnmake <arguments>
+   build    - Calls vfnmake <arguments> then make.
+   rebuild  - Calls make clean, vfnmake <arguments>, then make
+   run      - Calls vfnmake, make, then ./program <arguments>
 ```
 
 ### Install
