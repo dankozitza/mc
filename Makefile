@@ -1,34 +1,40 @@
 PREFIX=/usr/local
-CFLAGS=-O$(O) 
+CFLAGS=-O$(O)  -std=c++11
 O=2
 LFLAGS=
-OBJS=objs/mc.o
+OBJS=objs/mc.o objs/tools.o
 
 
 .PHONY: all
-all: deps/vfnmake/vfnmake.conf objs mc
+all: objs mc
 
 deps:
 	@ mkdir deps
-
+ 
 deps/vfnmake: deps
 	@ echo "    GET deps/vfnmake"
 	@ cd deps; git clone https://github.com/dankozitza/vfnmake
-
-deps/vfnmake/vfnmake.conf: deps/vfnmake
+ 
+deps/vfnmake/installed: deps/vfnmake
 	@ echo "    MAKE INSTALL deps/vfnmake"
 	@ cd deps/vfnmake; make install
-
-./mc: $(OBJS)
+	@ touch deps/vfnmake/installed
+ 
+./mc: deps/vfnmake/installed $(OBJS)
 	@ echo "    LINK ./mc"
 	@ $(CXX) $(OBJS) -o "./mc" $(LFLAGS)
 
-objs/mc.o: src/mc.cpp
+objs/mc.o: src/mc.cpp src/tools.hpp
 	@ echo "    CXX  src/mc.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/mc.cpp" -o $@
 
+objs/tools.o: src/tools.cpp src/tools.hpp
+	@ echo "    CXX  src/tools.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools.cpp" -o $@
+
 objs:
 	@ mkdir "objs"
+
 .PHONY: c clean
 c: clean
 clean:
@@ -36,10 +42,11 @@ clean:
 	@ rm -f "./mc"
 	@ echo "    CLEAN"
 
-.PHONY: sc super-clean
-sc: super-clean
-super-clean: clean
+.PHONY: sc superclean
+sc: superclean
+superclean: clean
 	@ rm -rf "deps"
+	@ echo "    SUPERCLEAN"
 
 .PHONY: f fresh
 f: fresh
@@ -59,7 +66,7 @@ debug: all
 
 .PHONY: check-syntax
 check-syntax:
-	$(CXX) $(CFLAGS) -fsyntax-only -Wall -o /dev/null -S $(CHK_SOURCES)
+	$(CXX) $(CFLAGS) -fsyntax-only -Wall -o /dev/null -S src/*
 
 .PHONY: install
 install: all
@@ -71,4 +78,4 @@ install: all
 uninstall:
 	@ cd deps/vfnmake; make clean; make uninstall
 	@ rm $(PREFIX)/bin/mc
-	@ echo "[1;32m*[0m mc removed from $(PREFIX)/bin"
+	@ echo "[1;32m*[0m mc removed from $(PREFIX)/bin[0m"
