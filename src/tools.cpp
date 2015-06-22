@@ -48,11 +48,35 @@ void tools::get_vfnmake_conf(unordered_map<string, string>& config) {
 	fh.close();
 }
 
-bool tools::matches(map<string, string>& results, string s, string str_re) {
-
-	results = map<string, string>();
-
+// in case i don't want to include regex
+bool tools::matches(string results[], string s, string str_re) {
 	smatch sm;
+	bool ret = matches(sm, s, str_re);
+	if (!ret)
+		return false;
+	for (unsigned i=0; i<sm.size(); i++) {
+		results[i] = sm[i];
+	}
+	return true;
+}
+bool tools::matches(map<string, string>& results, string s, string str_re) {
+	smatch sm;
+	results = map<string, string>();
+	bool ret = matches(sm, s, str_re);
+	if (!ret)
+		return false;
+	for (unsigned i=0; i<sm.size(); i++) {
+		char si [33];
+		sprintf(si, "%d", i);
+		results[si] = sm[i];
+	}
+	return true;
+}
+
+// saves the work of creating a regex object
+bool tools::matches(smatch& sm, string s, string str_re) {
+
+	sm = smatch();
 	regex re;
 	try {
 		regex rete (str_re.c_str());
@@ -67,12 +91,6 @@ bool tools::matches(map<string, string>& results, string s, string str_re) {
 	try {
 		if (!regex_match(s, sm, re))
 			return false;
-
-		for (unsigned i=0; i<sm.size(); i++) {
-			char buffer [33];
-			sprintf(buffer, "%d", i);
-			results[buffer] = sm[i];
-		}
 	}
 	catch (regex_error& e){
 		cout << "tools::matches: regex_match returned error code: `";
@@ -85,6 +103,56 @@ bool tools::matches(map<string, string>& results, string s, string str_re) {
 }
 
 void tools::test_matches() {
+
+	string am[10];
+  	if (matches(am, "subject", "(sub)(.*)") == false)
+		cout << "test failed!, first matches call returned false!\n";
+
+	if (am[0] != "subject")
+		cout << "test failed!, match 0 [" << am[0] << "] did not match!\n";
+
+	if (am[1] != "sub")
+		cout << "test failed!, match 1 [" << am[1] << "] did not match!\n";
+
+	if (am[2] != "ject")
+		cout << "test failed!, match 2 [" << am[2] << "] did not match!\n";
+
+	if (matches(am, "a   ", "^(\\w+)\\s+(\\w*)$") == false)
+		cout << "test failed!, second matches call returned false!\n";
+
+	if (am[0] != "a   ")
+		cout << "test failed!, match 0 [" << am[0] << "] did not match!\n";
+
+	if (am[1] != "a")
+		cout << "test failed!, match 1 [" << am[1] << "] did not match!\n";
+
+	if (am[2] != "")
+		cout << "test failed!, match 2 [" << am[2] << "] did not match!\n";
+
+	smatch sm;
+  	if (matches(sm, "subject", "(sub)(.*)") == false)
+		cout << "test failed!, first matches call returned false!\n";
+
+	if (sm[0] != "subject")
+		cout << "test failed!, match 0 [" << sm[0] << "] did not match!\n";
+
+	if (sm[1] != "sub")
+		cout << "test failed!, match 1 [" << sm[1] << "] did not match!\n";
+
+	if (sm[2] != "ject")
+		cout << "test failed!, match 2 [" << sm[2] << "] did not match!\n";
+
+	if (matches(sm, "a   ", "^(\\w+)\\s+(\\w*)$") == false)
+		cout << "test failed!, second matches call returned false!\n";
+
+	if (sm[0] != "a   ")
+		cout << "test failed!, match 0 [" << sm[0] << "] did not match!\n";
+
+	if (sm[1] != "a")
+		cout << "test failed!, match 1 [" << sm[1] << "] did not match!\n";
+
+	if (sm[2] != "")
+		cout << "test failed!, match 2 [" << sm[2] << "] did not match!\n";
 
 	map<string, string> m;
   	if (matches(m, "subject", "(sub)(.*)") == false)
