@@ -24,6 +24,7 @@ int helpMessage() {
 	cout << "   build    - Calls vfnmake <arguments> then make.\n";
 	cout << "   rebuild  - Calls make clean, vfnmake <arguments>, then make\n";
 	cout << "   run      - Calls vfnmake, make, then ./program <arguments>\n";
+	cout << "   env      - Displays the variables read from vfnmake.conf\n";
 	cout << "\n";
 	return EXIT_FAILURE;
 }
@@ -57,13 +58,28 @@ int run () {
 	exitIfNotZero(build());
 
 	unordered_map<string, string> vfnconf;
-	tools::get_vfnmake_conf(vfnconf);
+	if (!tools::get_vfnmake_conf(vfnconf))
+		return EXIT_FAILURE;
 
 	string named_prog_call = "./";
 	named_prog_call += vfnconf["name"];
 	named_prog_call += args;
 	cout << "mc: calling `" << named_prog_call << "`\n";
 	exitIfNotZero(system(named_prog_call.c_str()));
+	return 0;
+}
+
+int env () {
+	unordered_map<string, string> vfnconf;
+	if (!tools::get_vfnmake_conf(vfnconf))
+		return EXIT_FAILURE;
+
+	cout << "\nvfnmake.conf:\n\n";
+	for (const auto item : vfnconf) {
+		cout << item.first << ": " << item.second << "\n";
+	}
+	cout << "\n";
+
 	return 0;
 }
 
@@ -93,6 +109,9 @@ int main(int argc, char *argv[]) {
 
 	if (!strcmp(argv[1], "run"))
 		return run();
+
+	if (!strcmp(argv[1], "env"))
+		return env();
 
 	// didn't recognize an argument!
 	for (int i = 1; i < argc; i++) {

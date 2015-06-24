@@ -16,6 +16,7 @@ mc command [arguments]
    build    - Calls vfnmake <arguments> then make.
    rebuild  - Calls make clean, vfnmake <arguments>, then make
    run      - Calls vfnmake, make, then ./program <arguments>
+   env      - Displays the variables read from vfnmake.conf
 ```
 
 ### Install

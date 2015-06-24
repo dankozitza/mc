@@ -14,7 +14,7 @@
 using namespace std;
 
 namespace tools {
-	void get_vfnmake_conf(unordered_map<string, string>& config);
+	bool get_vfnmake_conf(unordered_map<string, string>& config);
 	bool matches(string results[], string s, string regex);
 	bool matches(map<string, string>& results, string s, string regex);
 	bool matches(smatch& sm, string s, string regex);
