@@ -13,7 +13,7 @@ mc command [arguments]
 ```text
    help     - Show this help message
    makefile - Creates a make file by calling vfnmake <arguments>
-   build    - Calls vfnmake <arguments> then make.
+   build    - Calls vfnmake <arguments> then make
    rebuild  - Calls make clean, vfnmake <arguments>, then make
    run      - Calls vfnmake, make, then ./program <arguments>
    env      - Displays the variables read from vfnmake.conf

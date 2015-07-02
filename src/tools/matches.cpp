@@ -1,40 +1,25 @@
 //
-// tools.cpp
-// utility functions for mc
+// matches.cpp
+// overloaded function that implements regex_match()
 //
 // Created by Daniel Kozitza
 //
 
-#include "tools.hpp"
+#include "../tools.hpp"
 #include <iostream>
-#include <fstream>
-#include <regex>
-
-using namespace std;
-
-bool tools::get_vfnmake_conf(unordered_map<string, string>& config) {
-
-	ifstream fh;
-	fh.open("vfnmake.conf", ifstream::in);
-	if (!fh.is_open()) {
-		cout << "mc: could not open vfnmake.conf\n";
-		return false;
-	}
-	while(fh.peek() != EOF) {
-		string line;
-		getline(fh, line);
-
-		string m[3];
-		if (matches(m, line, "^(\\w+):\\s*(.*)$"))
-			config[m[1]] = m[2];
-	}
-
-	fh.close();
-	return true;
-}
 
 // in case i don't want to include regex
 bool tools::matches(string results[], string s, string str_re) {
+	smatch sm;
+	bool ret = matches(sm, s, str_re);
+	if (!ret)
+		return false;
+	for (unsigned i=0; i<sm.size(); i++) {
+		results[i] = sm[i];
+	}
+	return true;
+}
+bool tools::matches(vector<string> results, string s, string str_re) {
 	smatch sm;
 	bool ret = matches(sm, s, str_re);
 	if (!ret)
@@ -114,9 +99,35 @@ void tools::test_matches() {
 	if (am[2] != "")
 		cout << "test failed!, match 2 [" << am[2] << "] did not match!\n";
 
+	vector<string> vm;
+  	if (matches(vm, "subject", "(sub)(.*)") == false)
+		cout << "test failed!, third matches call returned false!\n";
+
+	if (vm[0] != "subject")
+		cout << "test failed!, match 0 [" << vm[0] << "] did not match!\n";
+
+	if (vm[1] != "sub")
+		cout << "test failed!, match 1 [" << vm[1] << "] did not match!\n";
+
+	if (vm[2] != "ject")
+		cout << "test failed!, match 2 [" << vm[2] << "] did not match!\n";
+
+	if (matches(vm, "a   ", "^(\\w+)\\s+(\\w*)$") == false)
+		cout << "test failed!, fourth matches call returned false!\n";
+
+	if (vm[0] != "a   ")
+		cout << "test failed!, match 0 [" << vm[0] << "] did not match!\n";
+
+	if (vm[1] != "a")
+		cout << "test failed!, match 1 [" << vm[1] << "] did not match!\n";
+
+	if (vm[2] != "")
+		cout << "test failed!, match 2 [" << vm[2] << "] did not match!\n";
+
+
 	smatch sm;
   	if (matches(sm, "subject", "(sub)(.*)") == false)
-		cout << "test failed!, first matches call returned false!\n";
+		cout << "test failed!, fifth matches call returned false!\n";
 
 	if (sm[0] != "subject")
 		cout << "test failed!, match 0 [" << sm[0] << "] did not match!\n";
@@ -128,7 +139,7 @@ void tools::test_matches() {
 		cout << "test failed!, match 2 [" << sm[2] << "] did not match!\n";
 
 	if (matches(sm, "a   ", "^(\\w+)\\s+(\\w*)$") == false)
-		cout << "test failed!, second matches call returned false!\n";
+		cout << "test failed!, sixth matches call returned false!\n";
 
 	if (sm[0] != "a   ")
 		cout << "test failed!, match 0 [" << sm[0] << "] did not match!\n";
@@ -141,7 +152,7 @@ void tools::test_matches() {
 
 	map<string, string> m;
   	if (matches(m, "subject", "(sub)(.*)") == false)
-		cout << "test failed!, first matches call returned false!\n";
+		cout << "test failed!, seventh matches call returned false!\n";
 
 	if (m["0"] != "subject")
 		cout << "test failed!, match 0 [" << m["0"] << "] did not match!\n";
@@ -153,7 +164,7 @@ void tools::test_matches() {
 		cout << "test failed!, match 2 [" << m["2"] << "] did not match!\n";
 
 	if (matches(m, "a   ", "^(\\w+)\\s+(\\w*)$") == false)
-		cout << "test failed!, second matches call returned false!\n";
+		cout << "test failed!, eighth matches call returned false!\n";
 
 	if (m["0"] != "a   ")
 		cout << "test failed!, match 0 [" << m["0"] << "] did not match!\n";
