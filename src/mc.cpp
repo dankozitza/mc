@@ -12,8 +12,9 @@
 
 using namespace tools;
 
-string Args;
-string VfnmakeSystemCall = "vfnmake";
+string         Args;
+vector<string> Argv;
+string         VfnmakeSystemCall = "vfnmake";
 
 int help_message() {
 	cout << "\nmc is a tool for managing c++ source code.\n\n";
@@ -24,6 +25,8 @@ int help_message() {
 	cout << "   build    - Calls vfnmake <arguments> then make\n";
 	cout << "   rebuild  - Calls make clean, vfnmake <arguments>, then make\n";
 	cout << "   run      - Calls vfnmake, make, then ./program <arguments>\n";
+	cout << "   doc      - Parses .cpp files adding documentation and\n";
+	cout << "              prompting the user for function descriptions\n";
 	cout << "   env      - Displays the variables read from vfnmake.conf\n";
 	cout << "\n";
 	return EXIT_FAILURE;
@@ -57,6 +60,23 @@ void run() {
 	require(system(named_prog_call.c_str()));
 }
 
+void doc() {
+	vector<string> fnames = Argv;
+
+	if (fnames.size() == 0) {
+		// get .cpp file names by recursing through vfnconf["src_directory"]
+		cout << "mc: automatic source file detection is under construction\n";
+	}
+	for (int fn_i = 0; fn_i < fnames.size(); fn_i++) {
+		cout << "mc: adding documentation to `" << fnames[fn_i] << "`.\n";
+		if (fnames.size() > 1)
+			cout << "mc: file " << fn_i+1 << " of " << fnames.size() << ".\n";
+		add_documentation(fnames[fn_i]);
+		//for (const auto file_name : Argv)
+		//	cout << file_name << "\n";// " << item.second << endl;
+	}
+}
+
 void env() {
 	unordered_map<string, string> vfnconf;
 	require(get_vfnmake_conf(vfnconf));
@@ -72,9 +92,10 @@ int main(int argc, char *argv[]) {
 
 	if (argc < 2)
 		return help_message();
-
-	for (int i = 2; i < argc; i++)
+	for (int i = 2; i < argc; i++) {
+		Argv.push_back(string(argv[i]));
 		Args.append(string(" ").append(argv[i]));
+	}
 
 	if (!strcmp(argv[1], "help")) {
 		help_message();
@@ -92,13 +113,19 @@ int main(int argc, char *argv[]) {
 	else if (!strcmp(argv[1], "run")) {
 		run();
 	}
+	else if (!strcmp(argv[1], "doc")) {
+		doc();
+	}
 	else if (!strcmp(argv[1], "env")) {
 		env();
 	}
-
-	// didn't recognize an argument!
-	for (int i = 1; i < argc; i++) {
-		cout << "mc: unrecognized argument: `" << argv[i] << "`.\n";
+	else {
+		// didn't recognize an argument!
+		for (int i = 1; i < argc; i++) {
+			cout << "mc: unrecognized argument: `" << argv[i] << "`.\n";
+		}
+		return help_message();
 	}
-	return help_message();
+
+	return 0;
 }

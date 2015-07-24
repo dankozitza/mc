@@ -8,6 +8,11 @@
 #include "../tools.hpp"
 #include <iostream>
 
+bool tools::matches(string s, string str_re) {
+	smatch sm;
+	return matches(sm, s, str_re);
+}
+
 // in case i don't want to include regex
 bool tools::matches(string results[], string s, string str_re) {
 	smatch sm;

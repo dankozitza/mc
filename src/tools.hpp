@@ -1,3 +1,4 @@
+//
 // tools.hpp
 // utility functions for mc
 //
@@ -15,8 +16,10 @@ using namespace std;
 
 namespace tools {
 	bool get_vfnmake_conf(unordered_map<string, string>& config);
+	void add_documentation(string fname);
 	bool require(int sys_exit_val, string msg = "");
 	bool require(bool func_return_val, string msg = "");
+	bool matches(string s, string str_re);
 	bool matches(string results[], string s, string regex);
 	bool matches(vector<string> results, string s, string regex);
 	bool matches(map<string, string>& results, string s, string regex);
