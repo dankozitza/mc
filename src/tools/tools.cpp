@@ -34,6 +34,44 @@ bool tools::get_vfnmake_conf(unordered_map<string, string>& config) {
 	return true;
 }
 
+// function to be called when ctrl-c (SIGINT) signal is sent to process
+void
+signal_callback_handler(int signum)
+{
+	printf("Caught signal %d\n",signum);
+	// Cleanup and close up stuff here
+
+	// Terminate program
+	exit(signum);
+}
+
+class suicide_bomber {
+	string file_name;
+
+	public:
+		suicide_bomber(string fname) {
+			cout << "tools::suicide_bomber: I WILL DESTROY `" << fname << "`!!!\n";
+			file_name = fname;
+			signal(SIGINT, signal_callback_handler);
+		}
+		void dud() {
+			file_name = "";
+		}
+		void boom() {
+			 if (file_name != "") {
+				cout << "tools::suicide_bomber: DIE YOU GODLESS HEATHEN!!!!\n";
+				remove(file_name.c_str());
+				cout << "	removed `" <<  file_name << "`.\n";
+			}
+		}
+//		void signal_callback_handler(int sigint) {
+//			boom();
+//		}
+		~suicide_bomber() {
+			boom();
+		}
+};
+
 // add_documentation
 //
 // adds title to source files and descriptions to functions. if the first line
@@ -51,17 +89,17 @@ void tools::add_documentation(string fname) {
 	ifstream ifh;
 	ifh.open(fname, ifstream::in);
 	if (!ifh.is_open()) {
-		cout << "tools::add_documentation: couldn't open `" << fname << ".\n";
+		cout << "tools::add_documentation: couldn't open `" << fname << "`.\n";
 		return;
 	}
 
 	ofstream ofh;
 	ofh.open(tfname, ofstream::out);
 	if (!ofh.is_open()) {
-		cout << "tools::add_documentation: couldn't open `" << tfname << ".\n";
+		cout << "tools::add_documentation: couldn't open `" << tfname << "`.\n";
 		return;
 	}
-
+	suicide_bomber jim(tfname);
 
 	int line_num = 1;
 	while (ifh.peek() != EOF) {
@@ -73,13 +111,13 @@ void tools::add_documentation(string fname) {
 
 			if (line != "//") {
 				cout << "tools::add_documentation: making new title.\n";
-				cout << "   lines will be broken at 80 automatically, \\n will be ";
+				cout << "	lines will be broken at 80 automatically, \\n will be ";
 				cout << "replaced with newlines.\n";
-				cout << "   enter a description for the title:\n\n";
+				cout << "	enter a description for the title:\n\n";
 				string desc;
 				getline(cin, desc);
 				
-				cout << "   adding title:\n\n";
+				cout << "	adding title:\n\n";
 				title.push_back("//");
 				title.push_back("// " + fname); // TODO: get rid of dir names here
 				title.push_back("//");
@@ -109,19 +147,19 @@ void tools::add_documentation(string fname) {
 			if (previous_line != "//") {
 				cout << "tools::add_documentation: found function declaration ";
 				cout << "without documentation:\n";
-				cout << "   " << fname << " line " << line_num << ":\n\n";
+				cout << "	" << fname << " line " << line_num << ":\n\n";
 				cout << line << "\n\n";
-				cout << "   add description? (Y/n): ";
+				cout << "	add description? (Y/n): ";
 				getline(cin, answer);
 				if (answer != "n") {
-					cout << "   lines will break at 80 automatically, \\n will be ";
+					cout << "	lines will break at 80 automatically, \\n will be ";
 					cout << "replaced with newlines.\n";
-					cout << "   enter a description for the function `" << m[1];
+					cout << "	enter a description for the function `" << m[1];
 					cout << "`:\n\n";
 					string desc;
 					getline(cin, desc);
 					
-					cout << "   adding description:\n\n";
+					cout << "	adding description:\n\n";
 					prefunc.push_back("// " + m[1]); // TODO: get rid of dir names
 					prefunc.push_back("//");
 					if (desc != "") {
@@ -152,29 +190,29 @@ void tools::add_documentation(string fname) {
 
 	if (!made_change) {
 		cout << "tools::add_documentation: no changes made!\n";
-		cout << "   removing `" << tfname << "`.\n";
+		cout << "	removing `" << tfname << "`.\n";
 		remove(tfname.c_str());
 		return;
 	}
 
-	cout << "tools::add_documentation: finished!\n   new file is `" << tfname;
+	cout << "tools::add_documentation: finished!\n	new file is `" << tfname;
 	cout << "`.\n\n";
-	cout << "   overwrite existing file? (Y/n): ";
+	cout << "	overwrite existing file? (Y/n): ";
 
 	getline(cin, answer);
 
 	if (answer != "n") {
-		cout << "   removing `" << fname << "`.\n";
+		cout << "	removing `" << fname << "`.\n";
 		remove(fname.c_str());
-		cout << "   renaming `" << tfname << "` to `" << fname << "`.\n";
+		cout << "	renaming `" << tfname << "` to `" << fname << "`.\n";
 		rename(tfname.c_str(), fname.c_str());
 	}
 	else {
-		cout << "   overwrite canceled!\n";
-		cout << "\n   remove `" << tfname << "`? (Y/n): ";
+		cout << "	overwrite canceled!\n";
+		cout << "\n	remove `" << tfname << "`? (Y/n): ";
 		getline(cin, answer);
 		if (answer != "n") {
-			cout << "   removing `" << tfname << "`.\n";
+			cout << "	removing `" << tfname << "`.\n";
 			remove(tfname.c_str());
 		}
 	}
@@ -208,7 +246,7 @@ bool tools::require(bool func_return_val, string msg) {
 			cout << msg << "\n";
 		}
 		cout << "tools::require: got return value `false`, ";
-	   cout << "exiting.\n";
+      cout << "exiting.\n";
 		exit(EXIT_FAILURE);
 	}
 }
