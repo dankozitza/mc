@@ -1,5 +1,6 @@
 //
 // mc.cpp
+//
 // manage c++ code
 //
 // Created by Daniel Kozitza
@@ -27,6 +28,9 @@ int help_message() {
 	cout << "   run      - Calls vfnmake, make, then ./program <arguments>\n";
 	cout << "   doc      - Parses .cpp files adding documentation and\n";
 	cout << "              prompting the user for function descriptions\n";
+	// TODO:
+	//cout << "   mkreadme - Make a README.md file from ./program <arguments>.\n";
+	//cout << "              arguments is `help` by default.\n";
 	cout << "   env      - Displays the variables read from vfnmake.conf\n";
 	cout << "\n";
 	return EXIT_FAILURE;

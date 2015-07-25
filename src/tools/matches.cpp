@@ -14,6 +14,7 @@ bool tools::matches(string s, string str_re) {
 }
 
 // in case i don't want to include regex
+//
 bool tools::matches(string results[], string s, string str_re) {
 	smatch sm;
 	bool ret = matches(sm, s, str_re);
@@ -24,13 +25,13 @@ bool tools::matches(string results[], string s, string str_re) {
 	}
 	return true;
 }
-bool tools::matches(vector<string> results, string s, string str_re) {
+bool tools::matches(vector<string>& results, string s, string str_re) {
 	smatch sm;
 	bool ret = matches(sm, s, str_re);
 	if (!ret)
 		return false;
 	for (unsigned i=0; i<sm.size(); i++) {
-		results[i] = sm[i];
+		results.push_back(sm[i]);
 	}
 	return true;
 }
@@ -48,7 +49,12 @@ bool tools::matches(map<string, string>& results, string s, string str_re) {
 	return true;
 }
 
+// matches
+//
 // saves the work of creating a regex object
+//
+// use R"(raw_characters)" for 'str_re' to avoid double escaping regex
+//
 bool tools::matches(smatch& sm, string s, string str_re) {
 
 	sm = smatch();
@@ -59,7 +65,7 @@ bool tools::matches(smatch& sm, string s, string str_re) {
 	}
 	catch (regex_error& e){
 		cout << "tools::matches: regex returned error code: `";
-	  	cout << e.code() << "` when evaluating expression: `" << str_re << "`\n";
+		cout << e.code() << "` when evaluating expression: `" << str_re << "`\n";
 		throw e;
 	}
 
@@ -77,6 +83,10 @@ bool tools::matches(smatch& sm, string s, string str_re) {
 	return true;
 }
 
+// test_matches
+//
+// A test for all the matches functions.
+//
 void tools::test_matches() {
 
 	string am[10];

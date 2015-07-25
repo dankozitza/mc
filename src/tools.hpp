@@ -21,7 +21,7 @@ namespace tools {
 	bool require(bool func_return_val, string msg = "");
 	bool matches(string s, string str_re);
 	bool matches(string results[], string s, string regex);
-	bool matches(vector<string> results, string s, string regex);
+	bool matches(vector<string>& results, string s, string regex);
 	bool matches(map<string, string>& results, string s, string regex);
 	bool matches(smatch& sm, string s, string regex);
 	void test_matches();
