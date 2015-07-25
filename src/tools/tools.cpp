@@ -44,6 +44,7 @@ bool tools::get_vfnmake_conf(unordered_map<string, string>& config) {
 void tools::add_documentation(string fname) {
 
 	string tfname = fname + "_mc_added_docs";
+	string previous_line = "NO_PREVIOUS_LINE";
 	string answer;
 	bool made_change = false;
 
@@ -61,8 +62,6 @@ void tools::add_documentation(string fname) {
 		return;
 	}
 
-
-	string previous_line = "NO_PREVIOUS_LINE";
 
 	int line_num = 1;
 	while (ifh.peek() != EOF) {
@@ -91,12 +90,11 @@ void tools::add_documentation(string fname) {
 				title.push_back("// Created by Daniel Kozitza");
 				title.push_back("//");
 				for (const auto item : title)
-					cout << "   " << item << "\n";
+					cout << item << "\n";
 				cout << "\n";
 				for (const auto item : title)
 					ofh << item << endl;
 				made_change = true;
-
 			}
 			else {
 				cout << "tools::add_documentation: file already has a title.\n";
@@ -124,7 +122,7 @@ void tools::add_documentation(string fname) {
 					getline(cin, desc);
 					
 					cout << "   adding description:\n\n";
-					prefunc.push_back("// " + m[1]); // TODO: get rid of dir names here
+					prefunc.push_back("// " + m[1]); // TODO: get rid of dir names
 					prefunc.push_back("//");
 					if (desc != "") {
 						prefunc.push_back("// " + desc); // TODO: break lines at 80
@@ -185,7 +183,6 @@ void tools::add_documentation(string fname) {
 // require
 //
 // overloaded function for exiting on failure with optional message.
-//
 // TODO: have this throw an exception instead.
 //
 // exit if sys_exit_val is not zero.

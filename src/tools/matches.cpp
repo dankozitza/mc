@@ -13,6 +13,8 @@ bool tools::matches(string s, string str_re) {
 	return matches(sm, s, str_re);
 }
 
+// matches
+//
 // in case i don't want to include regex
 //
 bool tools::matches(string results[], string s, string str_re) {
@@ -35,19 +37,19 @@ bool tools::matches(vector<string>& results, string s, string str_re) {
 	}
 	return true;
 }
-bool tools::matches(map<string, string>& results, string s, string str_re) {
-	smatch sm;
-	results = map<string, string>();
-	bool ret = matches(sm, s, str_re);
-	if (!ret)
-		return false;
-	for (unsigned i=0; i<sm.size(); i++) {
-		char si [33];
-		sprintf(si, "%d", i);
-		results[si] = sm[i];
-	}
-	return true;
-}
+//bool tools::matches(map<string, string>& results, string s, string str_re) {
+//	smatch sm;
+//	results = map<string, string>();
+//	bool ret = matches(sm, s, str_re);
+//	if (!ret)
+//		return false;
+//	for (unsigned i=0; i<sm.size(); i++) {
+//		char si [33];
+//		sprintf(si, "%d", i);
+//		results[si] = sm[i];
+//	}
+//	return true;
+//}
 
 // matches
 //
@@ -165,28 +167,28 @@ void tools::test_matches() {
 	if (sm[2] != "")
 		cout << "test failed!, match 2 [" << sm[2] << "] did not match!\n";
 
-	map<string, string> m;
-  	if (matches(m, "subject", "(sub)(.*)") == false)
-		cout << "test failed!, seventh matches call returned false!\n";
+	//map<string, string> m;
+  	//if (matches(m, "subject", "(sub)(.*)") == false)
+	//	cout << "test failed!, seventh matches call returned false!\n";
 
-	if (m["0"] != "subject")
-		cout << "test failed!, match 0 [" << m["0"] << "] did not match!\n";
+	//if (m["0"] != "subject")
+	//	cout << "test failed!, match 0 [" << m["0"] << "] did not match!\n";
 
-	if (m["1"] != "sub")
-		cout << "test failed!, match 1 [" << m["1"] << "] did not match!\n";
+	//if (m["1"] != "sub")
+	//	cout << "test failed!, match 1 [" << m["1"] << "] did not match!\n";
 
-	if (m["2"] != "ject")
-		cout << "test failed!, match 2 [" << m["2"] << "] did not match!\n";
+	//if (m["2"] != "ject")
+	//	cout << "test failed!, match 2 [" << m["2"] << "] did not match!\n";
 
-	if (matches(m, "a   ", "^(\\w+)\\s+(\\w*)$") == false)
-		cout << "test failed!, eighth matches call returned false!\n";
+	//if (matches(m, "a   ", "^(\\w+)\\s+(\\w*)$") == false)
+	//	cout << "test failed!, eighth matches call returned false!\n";
 
-	if (m["0"] != "a   ")
-		cout << "test failed!, match 0 [" << m["0"] << "] did not match!\n";
+	//if (m["0"] != "a   ")
+	//	cout << "test failed!, match 0 [" << m["0"] << "] did not match!\n";
 
-	if (m["1"] != "a")
-		cout << "test failed!, match 1 [" << m["1"] << "] did not match!\n";
+	//if (m["1"] != "a")
+	//	cout << "test failed!, match 1 [" << m["1"] << "] did not match!\n";
 
-	if (m["2"] != "")
-		cout << "test failed!, match 2 [" << m["2"] << "] did not match!\n";
+	//if (m["2"] != "")
+	//	cout << "test failed!, match 2 [" << m["2"] << "] did not match!\n";
 }
