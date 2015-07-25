@@ -116,7 +116,7 @@ void tools::add_documentation(string fname) {
 				cout << "   add description? (Y/n): ";
 				getline(cin, answer);
 				if (answer != "n") {
-					cout << "   lines will be broken at 80 automatically, \\n will be ";
+					cout << "   lines will break at 80 automatically, \\n will be ";
 					cout << "replaced with newlines.\n";
 					cout << "   enter a description for the function `" << m[1];
 					cout << "`:\n\n";
@@ -131,7 +131,7 @@ void tools::add_documentation(string fname) {
 						prefunc.push_back("//");
 					}
 					for (const auto item : prefunc)
-						cout << "   " << item << "\n";
+						cout << item << "\n";
 					cout << "\n";
 					for (const auto item : prefunc)
 						ofh << item << endl;
@@ -141,10 +141,8 @@ void tools::add_documentation(string fname) {
 					cout << endl;
 			}
 		}
-		//if (matches(m, line, "(?public\\:|protected\\:|private\\:) (?const )*")) {
-		//	cout << "matches function declaration regex!\n";
-		//}
 
+		// copy the lines to the new file
 		ofh << line << endl;
 
 		previous_line = line;
