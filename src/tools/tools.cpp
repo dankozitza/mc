@@ -8,6 +8,7 @@
 #include "../tools.hpp"
 #include <iostream>
 #include <fstream>
+#include <csignal>
 
 // get_vfnmake_conf
 //
@@ -34,14 +35,45 @@ bool tools::get_vfnmake_conf(unordered_map<string, string>& config) {
 	return true;
 }
 
+vector<void (*)(int)> sig_handlers;
+
+// signals_callback_handler
+//
+// the signal handler for all signal handlers. runs all the signal handlers in 
+// the sig_handlers vector. use the signals function to add handlers to the
+// sig_handlers vector.
+//
 // function to be called when ctrl-c (SIGINT) signal is sent to process
-void
-signal_callback_handler(int signum)
-{
-	printf("Caught signal %d\n",signum);
-	// Cleanup and close up stuff here
+//
+void signals_callback_handler(int signum) {
+
+	cout << "\n	caught signal `" << signum << "`.\n";
+
+	// run all other handlers
+	for (const auto handler : sig_handlers)
+		// may need to do this in try catch block
+		handler(signum);
 
 	// Terminate program
+	exit(signum);
+}
+
+// signals
+//
+// replacement for signal that allows multiple callback handlers to be used.
+//
+void signals(void (*callback_func)(int)) {
+	sig_handlers.push_back(callback_func);
+	signal(SIGINT, signals_callback_handler);
+}
+
+vector<string> targets;
+
+void destroy_targets(int signum) {
+	for (const auto fname : targets) {
+		cout << "tools::destroy_targets: removing `" << fname << "`.\n";
+		remove(fname.c_str());
+	}
 	exit(signum);
 }
 
@@ -50,15 +82,22 @@ class suicide_bomber {
 
 	public:
 		suicide_bomber(string fname) {
-			cout << "tools::suicide_bomber: I WILL DESTROY `" << fname << "`!!!\n";
+			cout << "tools::suicide_bomber: I WILL REMOVE `" << fname << "`!!!\n";
 			file_name = fname;
-			signal(SIGINT, signal_callback_handler);
+
+			// for the destroy_targets signal handler
+			targets.push_back(fname);
+
+
+			signals(destroy_targets);
+			signals(destroy_targets);
 		}
 		void dud() {
 			file_name = "";
 		}
 		void boom() {
 			 if (file_name != "") {
+				// boom only happens when the program exits nicely
 				cout << "tools::suicide_bomber: DIE YOU GODLESS HEATHEN!!!!\n";
 				remove(file_name.c_str());
 				cout << "	removed `" <<  file_name << "`.\n";
@@ -99,6 +138,7 @@ void tools::add_documentation(string fname) {
 		cout << "tools::add_documentation: couldn't open `" << tfname << "`.\n";
 		return;
 	}
+	// jim will remove the file at tfname.
 	suicide_bomber jim(tfname);
 
 	int line_num = 1;
@@ -190,8 +230,6 @@ void tools::add_documentation(string fname) {
 
 	if (!made_change) {
 		cout << "tools::add_documentation: no changes made!\n";
-		cout << "	removing `" << tfname << "`.\n";
-		remove(tfname.c_str());
 		return;
 	}
 
@@ -211,10 +249,8 @@ void tools::add_documentation(string fname) {
 		cout << "	overwrite canceled!\n";
 		cout << "\n	remove `" << tfname << "`? (Y/n): ";
 		getline(cin, answer);
-		if (answer != "n") {
-			cout << "	removing `" << tfname << "`.\n";
-			remove(tfname.c_str());
-		}
+		if (answer == "n")
+			jim.dud();
 	}
 }
 
