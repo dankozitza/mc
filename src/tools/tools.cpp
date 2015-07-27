@@ -35,13 +35,21 @@ bool tools::get_vfnmake_conf(unordered_map<string, string>& config) {
 	return true;
 }
 
-vector<void (*)(int)> sig_handlers;
+// 
+// SIGABRT: 6
+// SIGFPE: 8
+// SIGILL: 4
+// SIGINT: 2
+// SIGSEGV: 11
+// SIGTERM: 15
+//
+vector<void (*)(int)> sig_handlers[16];
 
 // signals_callback_handler
 //
 // the signal handler for all signal handlers. runs all the signal handlers in 
-// the sig_handlers vector. use the signals function to add handlers to the
-// sig_handlers vector.
+// the sig_handlers vector associated with that signal. use the signals function
+// to add handlers to the sig_handlers array of vectors.
 //
 // function to be called when ctrl-c (SIGINT) signal is sent to process
 //
@@ -49,10 +57,16 @@ void signals_callback_handler(int signum) {
 
 	cout << "\n	caught signal `" << signum << "`.\n";
 
+	if (signum < 0 || signum > 15) {
+		cout << "	signal number out of bounds!!!\n";
+		exit(signum);
+	}
+
+	// this doesn't work if the handler exits
 	// run all other handlers
-	for (const auto handler : sig_handlers)
-		// may need to do this in try catch block
+	for (const auto handler : sig_handlers[signum]) {
 		handler(signum);
+	}
 
 	// Terminate program
 	exit(signum);
@@ -62,8 +76,11 @@ void signals_callback_handler(int signum) {
 //
 // replacement for signal that allows multiple callback handlers to be used.
 //
-void signals(void (*callback_func)(int)) {
-	sig_handlers.push_back(callback_func);
+// TODO: store a vector of vectors of callback handlers so that each signal
+//       has it's own list of callback handlers.
+//
+void signals(int sig, void (*callback_func)(int)) {
+	sig_handlers[sig].push_back(callback_func);
 	signal(SIGINT, signals_callback_handler);
 }
 
@@ -74,7 +91,8 @@ void destroy_targets(int signum) {
 		cout << "tools::destroy_targets: removing `" << fname << "`.\n";
 		remove(fname.c_str());
 	}
-	exit(signum);
+	// this is done in signals_callback_handler.
+	//exit(signum);
 }
 
 class suicide_bomber {
@@ -89,8 +107,8 @@ class suicide_bomber {
 			targets.push_back(fname);
 
 
-			signals(destroy_targets);
-			signals(destroy_targets);
+			signals(SIGINT, destroy_targets);
+			signals(SIGINT, destroy_targets);
 		}
 		void dud() {
 			file_name = "";
@@ -103,9 +121,6 @@ class suicide_bomber {
 				cout << "	removed `" <<  file_name << "`.\n";
 			}
 		}
-//		void signal_callback_handler(int sigint) {
-//			boom();
-//		}
 		~suicide_bomber() {
 			boom();
 		}
