@@ -74,10 +74,8 @@ void signals_callback_handler(int signum) {
 
 // signals
 //
-// replacement for signal that allows multiple callback handlers to be used.
-//
-// TODO: store a vector of vectors of callback handlers so that each signal
-//       has it's own list of callback handlers.
+// replacement for signal that allows multiple callback handlers to be used for
+// each signal.
 //
 void signals(int sig, void (*callback_func)(int)) {
 	sig_handlers[sig].push_back(callback_func);
