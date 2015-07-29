@@ -1,3 +1,5 @@
+
+
 //
 // mc.cpp
 //
@@ -9,6 +11,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <string.h>
+#include <csignal>
 #include "tools.hpp"
 
 using namespace tools;
@@ -93,6 +96,8 @@ void env() {
 }
 
 int main(int argc, char *argv[]) {
+
+	signal(SIGINT, signals_callback_handler);
 
 	if (argc < 2)
 		return help_message();

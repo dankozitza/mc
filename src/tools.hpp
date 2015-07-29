@@ -16,6 +16,8 @@ using namespace std;
 
 namespace tools {
 	bool get_vfnmake_conf(unordered_map<string, string>& config);
+	void signals_callback_handler(int signum);
+	void signals(int sig, void (*callback_func)(int));
 	void add_documentation(string fname);
 	bool require(int sys_exit_val, string msg = "");
 	bool require(bool func_return_val, string msg = "");

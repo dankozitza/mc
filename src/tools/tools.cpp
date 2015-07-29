@@ -53,20 +53,20 @@ vector<void (*)(int)> sig_handlers[16];
 //
 // function to be called when ctrl-c (SIGINT) signal is sent to process
 //
-void signals_callback_handler(int signum) {
+void tools::signals_callback_handler(int signum) {
 
-	cout << "\n	caught signal `" << signum << "`.\n";
+	cout << "\ntools::signals_callback_handler: caught signal `";
+	cout << signum << "`.\n";
 
 	if (signum < 0 || signum > 15) {
 		cout << "	signal number out of bounds!!!\n";
 		exit(signum);
 	}
 
-	// this doesn't work if the handler exits
 	// run all other handlers
-	for (const auto handler : sig_handlers[signum]) {
+	// this doesn't work if the handler exits
+	for (const auto handler : sig_handlers[signum])
 		handler(signum);
-	}
 
 	// Terminate program
 	exit(signum);
@@ -76,21 +76,21 @@ void signals_callback_handler(int signum) {
 //
 // replacement for signal that allows multiple callback handlers to be used for
 // each signal.
+// 
+// signal(SIGINT, signals_callback_handler) must be called for program to exit
+// on interrupt.
 //
-void signals(int sig, void (*callback_func)(int)) {
+void tools::signals(int sig, void (*callback_func)(int)) {
 	sig_handlers[sig].push_back(callback_func);
-	signal(SIGINT, signals_callback_handler);
 }
 
 vector<string> targets;
 
-void destroy_targets(int signum) {
+void destroy_targets() {
 	for (const auto fname : targets) {
 		cout << "tools::destroy_targets: removing `" << fname << "`.\n";
 		remove(fname.c_str());
 	}
-	// this is done in signals_callback_handler.
-	//exit(signum);
 }
 
 class suicide_bomber {
@@ -105,8 +105,8 @@ class suicide_bomber {
 			targets.push_back(fname);
 
 
-			signals(SIGINT, destroy_targets);
-			signals(SIGINT, destroy_targets);
+			//signals(SIGINT, destroy_targets);
+			atexit(destroy_targets);
 		}
 		void dud() {
 			file_name = "";
@@ -123,6 +123,8 @@ class suicide_bomber {
 			boom();
 		}
 };
+
+bool called_atexit = false;
 
 // add_documentation
 //
@@ -151,8 +153,15 @@ void tools::add_documentation(string fname) {
 		cout << "tools::add_documentation: couldn't open `" << tfname << "`.\n";
 		return;
 	}
-	// jim will remove the file at tfname.
-	suicide_bomber jim(tfname);
+
+	// destroy_targets function will remove these at exit
+	targets.push_back(tfname);
+
+	// we only want to call atexit once.
+	if (!called_atexit) {
+		called_atexit = true;
+		atexit(destroy_targets);
+	}
 
 	int line_num = 1;
 	while (ifh.peek() != EOF) {
@@ -169,10 +178,18 @@ void tools::add_documentation(string fname) {
 				cout << "	enter a description for the title:\n\n";
 				string desc;
 				getline(cin, desc);
+
+				string short_fname = fname;
+				string m[2];
+				if (matches(m, fname, R"(.*/(.*?)$)")) {
+					cout << "	short_fname: `" << m[1] << "`.\n";
+					short_fname = m[1];
+				}
 				
 				cout << "	adding title:\n\n";
+
 				title.push_back("//");
-				title.push_back("// " + fname); // TODO: get rid of dir names here
+				title.push_back("// " + short_fname);
 				title.push_back("//");
 				if (desc != "") {
 					title.push_back("// " + desc); // TODO: break lines at 80
@@ -260,11 +277,12 @@ void tools::add_documentation(string fname) {
 	}
 	else {
 		cout << "	overwrite canceled!\n";
-		cout << "\n	remove `" << tfname << "`? (Y/n): ";
-		getline(cin, answer);
-		if (answer == "n")
-			jim.dud();
 	}
+//		cout << "\n	remove `" << tfname << "`? (Y/n): ";
+//		getline(cin, answer);
+//		if (answer == "n")
+//			jim.dud();
+//	}
 }
 
 // require
