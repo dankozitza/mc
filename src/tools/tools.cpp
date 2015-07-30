@@ -43,13 +43,13 @@ bool tools::get_vfnmake_conf(unordered_map<string, string>& config) {
 // SIGSEGV: 11
 // SIGTERM: 15
 //
-vector<void (*)(int)> sig_handlers[16];
+vector<void (*)(int)> SigHandlers[16];
 
 // signals_callback_handler
 //
 // the signal handler for all signal handlers. runs all the signal handlers in 
-// the sig_handlers vector associated with that signal. use the signals function
-// to add handlers to the sig_handlers array of vectors.
+// the SigHandlers vector associated with that signal. use the signals function
+// to add handlers to the SigHandlers array of vectors.
 //
 // function to be called when ctrl-c (SIGINT) signal is sent to process
 //
@@ -65,7 +65,7 @@ void tools::signals_callback_handler(int signum) {
 
 	// run all other handlers
 	// this doesn't work if the handler exits
-	for (const auto handler : sig_handlers[signum])
+	for (const auto handler : SigHandlers[signum])
 		handler(signum);
 
 	// Terminate program
@@ -81,13 +81,13 @@ void tools::signals_callback_handler(int signum) {
 // on interrupt.
 //
 void tools::signals(int sig, void (*callback_func)(int)) {
-	sig_handlers[sig].push_back(callback_func);
+	SigHandlers[sig].push_back(callback_func);
 }
 
-vector<string> targets;
+vector<string> Targets;
 
 void destroy_targets() {
-	for (const auto fname : targets) {
+	for (const auto fname : Targets) {
 		cout << "tools::destroy_targets: removing `" << fname << "`.\n";
 		remove(fname.c_str());
 	}
@@ -102,7 +102,7 @@ class suicide_bomber {
 			file_name = fname;
 
 			// for the destroy_targets signal handler
-			targets.push_back(fname);
+			Targets.push_back(fname);
 
 
 			//signals(SIGINT, destroy_targets);
@@ -124,7 +124,7 @@ class suicide_bomber {
 		}
 };
 
-bool called_atexit = false;
+bool CalledAtexit = false;
 
 // add_documentation
 //
@@ -155,11 +155,11 @@ void tools::add_documentation(string fname) {
 	}
 
 	// destroy_targets function will remove these at exit
-	targets.push_back(tfname);
+	Targets.push_back(tfname);
 
 	// we only want to call atexit once.
-	if (!called_atexit) {
-		called_atexit = true;
+	if (!CalledAtexit) {
+		CalledAtexit = true;
 		atexit(destroy_targets);
 	}
 
@@ -209,7 +209,8 @@ void tools::add_documentation(string fname) {
 			}
 		}
 
-		vector<string> m;
+		vector<string> m; // TODO: make sure m[1] matches all characters allowed
+								//       in a c++ function name.
 		if (matches(m, line, R"(\w.*?(\w+)\(.*\) \{)")) {
 			// prefunc is the comment block that will be written before a function.
 			vector<string> prefunc;
@@ -230,7 +231,7 @@ void tools::add_documentation(string fname) {
 					getline(cin, desc);
 					
 					cout << "	adding description:\n\n";
-					prefunc.push_back("// " + m[1]); // TODO: get rid of dir names
+					prefunc.push_back("// " + m[1]);
 					prefunc.push_back("//");
 					if (desc != "") {
 						prefunc.push_back("// " + desc); // TODO: break lines at 80
@@ -278,11 +279,43 @@ void tools::add_documentation(string fname) {
 	else {
 		cout << "	overwrite canceled!\n";
 	}
-//		cout << "\n	remove `" << tfname << "`? (Y/n): ";
-//		getline(cin, answer);
-//		if (answer == "n")
-//			jim.dud();
-//	}
+}
+
+// func_declarations
+//
+// This function populates the `declarations` vector with all of the file scope
+// function definitions found in `fname`. the items inside the `declarations`
+// vector will begin with the start of the line and end with the closing
+// parenthesis of the function.
+//
+// eg: the `declarations` element produced from this function's definition
+// would be:
+//
+// void tools::func_declarations(vector<string>& declarations, string fname)
+//
+void tools::func_declarations(vector<string>& declarations, string fname) {
+
+	ifstream ifh;
+	ifh.open(fname, ifstream::in);
+	if (!ifh.is_open()) {
+		cout << "tools::func_declarations: couldn't open `" << fname << "`.\n";
+		return;
+	}
+
+	int line_num = 1;
+	while (ifh.peek() != EOF) {
+		string line;
+		getline(ifh, line);
+
+		string m[2];
+		if (matches(m, line, R"((\w.*?\w+\(.*\)) \{)")) {
+			cout << "	got chunk: `" << m[1] << "`.\n";
+		}
+
+		line_num++;
+	}
+
+	ifh.close();
 }
 
 // require

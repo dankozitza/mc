@@ -1,5 +1,3 @@
-
-
 //
 // mc.cpp
 //
@@ -34,6 +32,8 @@ int help_message() {
 	// TODO:
 	//cout << "   mkreadme - Make a README.md file from ./program <arguments>.\n";
 	//cout << "              arguments is `help` by default.\n";
+	cout << "   mkhead   - Ensures that all the functions listed in the given\n";
+	cout << "              source files are found in the header file.\n";
 	cout << "   env      - Displays the variables read from vfnmake.conf\n";
 	cout << "\n";
 	return EXIT_FAILURE;
@@ -72,7 +72,7 @@ void doc() {
 
 	if (fnames.size() == 0) {
 		// get .cpp file names by recursing through vfnconf["src_directory"]
-		cout << "mc: automatic source file detection is under construction\n";
+		cout << "mc: automatic source file detection is under construction.\n";
 	}
 	for (int fn_i = 0; fn_i < fnames.size(); fn_i++) {
 		cout << "mc: adding documentation to `" << fnames[fn_i] << "`.\n";
@@ -81,6 +81,23 @@ void doc() {
 		add_documentation(fnames[fn_i]);
 		//for (const auto file_name : Argv)
 		//	cout << file_name << "\n";// " << item.second << endl;
+	}
+}
+
+void mkhead() {
+	vector<string> fnames = Argv;
+
+	if (fnames.size() == 0) {
+		cout << "mc: automatic source file detection is under construction.\n";
+	}
+	for (int fn_i = 0; fn_i < fnames.size(); fn_i++) {
+		cout << "mc: getting function declarations from `";
+		cout << fnames[fn_i] << "`.\n";
+		if (fnames.size() > 1)
+			cout << "mc: file " << fn_i+1 << " of " << fnames.size() << ".\n";
+
+		vector<string> funcdecs;
+		func_declarations(funcdecs, fnames[fn_i]);
 	}
 }
 
@@ -124,6 +141,9 @@ int main(int argc, char *argv[]) {
 	}
 	else if (!strcmp(argv[1], "doc")) {
 		doc();
+	}
+	else if (!strcmp(argv[1], "mkhead")) {
+		mkhead();
 	}
 	else if (!strcmp(argv[1], "env")) {
 		env();
