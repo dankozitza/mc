@@ -211,7 +211,7 @@ void tools::add_documentation(string fname) {
 
 		vector<string> m; // TODO: make sure m[1] matches all characters allowed
 								//       in a c++ function name.
-		if (matches(m, line, R"(\w.*?(\w+)\(.*\) \{)")) {
+		if (matches(m, line, R"(\w.*?(\w+)\(.*\) *\{)")) {
 			// prefunc is the comment block that will be written before a function.
 			vector<string> prefunc;
 
@@ -281,24 +281,23 @@ void tools::add_documentation(string fname) {
 	}
 }
 
-// func_declarations
+// get_func_defs
 //
-// This function populates the `declarations` vector with all of the file scope
-// function definitions found in `fname`. the items inside the `declarations`
-// vector will begin with the start of the line and end with the closing
-// parenthesis of the function.
+// This function populates the `definitions` vector with all of the file scope
+// function definitions found in `fname`. the items inside the `definitions`
+// vector will be the entire first line of the definition.
 //
-// eg: the `declarations` element produced from this function's definition
+// eg: the `definitions` element produced from this function's definition
 // would be:
 //
-// void tools::func_declarations(vector<string>& declarations, string fname)
+// void tools::get_func_defs(vector<string>& definitions, string fname) {
 //
-void tools::func_declarations(vector<string>& declarations, string fname) {
+void tools::get_func_defs(vector<string>& definitions, string fname) {
 
 	ifstream ifh;
 	ifh.open(fname, ifstream::in);
 	if (!ifh.is_open()) {
-		cout << "tools::func_declarations: couldn't open `" << fname << "`.\n";
+		cout << "tools::get_func_defs: couldn't open `" << fname << "`.\n";
 		return;
 	}
 
@@ -307,15 +306,32 @@ void tools::func_declarations(vector<string>& declarations, string fname) {
 		string line;
 		getline(ifh, line);
 
-		string m[2];
-		if (matches(m, line, R"((\w.*?\w+\(.*\)) \{)")) {
-			cout << "	got chunk: `" << m[1] << "`.\n";
+		// TODO: make this work on multi-line definitions
+		if (matches(line, R"(\w.*?\w+\(.*\) *\{)")) {
+			cout << "tools::get_func_defs: matched line: `" << line << "`.\n";
+			definitions.push_back(line);
+
 		}
 
 		line_num++;
 	}
 
 	ifh.close();
+}
+
+void tools::form_scoped_declarations(
+		map<string, vector<string>> &sd,
+		vector<string> defs) {
+
+	cout << "tools::form_scoped_declarations: testing:\n";
+	for (const auto line : defs) {
+		// here we only want definitions that have scope operators, we will use
+		// the scope to find the block of code that the declaration belongs!
+		string m[4];
+		if (matches(m, line, R"((.*?)(\w+)\:\:(.*?) *\{)"))
+			cout << "	`" << m[2] << "`: `" << m[1] << m[3] << "`.\n";
+	}
+
 }
 
 // require

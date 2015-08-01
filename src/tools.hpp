@@ -19,7 +19,10 @@ namespace tools {
 	void signals_callback_handler(int signum);
 	void signals(int sig, void (*callback_func)(int));
 	void add_documentation(string fname);
-	void func_declarations(vector<string>& declarations, string fname);
+	void get_func_defs(vector<string>& declarations, string fname);
+	void form_scoped_declarations(
+			map<string, vector<string>> &sd,
+			vector<string> defs);
 	bool require(int sys_exit_val, string msg = "");
 	bool require(bool func_return_val, string msg = "");
 	bool matches(string s, string str_re);

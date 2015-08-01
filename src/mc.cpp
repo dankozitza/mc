@@ -96,8 +96,11 @@ void mkhead() {
 		if (fnames.size() > 1)
 			cout << "mc: file " << fn_i+1 << " of " << fnames.size() << ".\n";
 
-		vector<string> funcdecs;
-		func_declarations(funcdecs, fnames[fn_i]);
+		vector<string> funcdefs;
+		get_func_defs(funcdefs, fnames[fn_i]);
+
+		map<string, vector<string>> scopedecs;
+		form_scoped_declarations(scopedecs, funcdefs);
 	}
 }
 
