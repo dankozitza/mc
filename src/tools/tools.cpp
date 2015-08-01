@@ -181,7 +181,7 @@ void tools::add_documentation(string fname) {
 
 				string short_fname = fname;
 				string m[2];
-				if (matches(m, fname, R"(.*/(.*?)$)")) {
+				if (matches(m, fname, R"(/(.*?)$)")) {
 					cout << "	short_fname: `" << m[1] << "`.\n";
 					short_fname = m[1];
 				}
@@ -211,7 +211,7 @@ void tools::add_documentation(string fname) {
 
 		vector<string> m; // TODO: make sure m[1] matches all characters allowed
 								//       in a c++ function name.
-		if (matches(m, line, R"(\w.*?(\w+)\(.*\) *\{)")) {
+		if (matches(m, line, R"(^\w.*?(\w+)\(.*\)? *\{?)")) {
 			// prefunc is the comment block that will be written before a function.
 			vector<string> prefunc;
 
@@ -302,15 +302,34 @@ void tools::get_func_defs(vector<string>& definitions, string fname) {
 	}
 
 	int line_num = 1;
+	bool multi_line_def = false;
 	while (ifh.peek() != EOF) {
 		string line;
 		getline(ifh, line);
 
+		// TODO: get rid of comments and trailing spaces
+		//string m[1];
+		//if (matches(m, line, R"(^(.*)//)"))
+		//	line = m[1];
+		//
+		//replace_first(line, R"(//)", "//_replacement_blarg_blarg");
+
+		if (multi_line_def) {
+			cout << "tools::get_func_defs: matched line: `" << line << "`.\n";
+			definitions[definitions.size()-1].append("\n" + line);
+			if (matches(line, R"(\{)"))
+				multi_line_def = false;
+			line_num++;
+			continue;
+		}
+
 		// TODO: make this work on multi-line definitions
-		if (matches(line, R"(\w.*?\w+\(.*\) *\{)")) {
+		if (matches(line, R"(^\w.*?\w+\(.*\)? *\{?)")) {
 			cout << "tools::get_func_defs: matched line: `" << line << "`.\n";
 			definitions.push_back(line);
 
+			if (!matches(line, R"(\{)"))
+				multi_line_def = true;
 		}
 
 		line_num++;
@@ -328,7 +347,8 @@ void tools::form_scoped_declarations(
 		// here we only want definitions that have scope operators, we will use
 		// the scope to find the block of code that the declaration belongs!
 		string m[4];
-		if (matches(m, line, R"((.*?)(\w+)\:\:(.*?) *\{)"))
+		// TODO: fix this
+		if (matches(m, line, R"(^(.*?)(\w+)\:\:(.*?) *\{)"))
 			cout << "	`" << m[2] << "`: `" << m[1] << m[3] << "`.\n";
 	}
 

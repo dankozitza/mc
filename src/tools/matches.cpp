@@ -62,7 +62,7 @@ bool tools::matches(smatch& sm, string s, string str_re) {
 	sm = smatch();
 	regex re;
 	try {
-		regex rete (str_re.c_str());
+		regex rete (str_re.c_str());//, regex_constants::basic);
 		re.assign(rete);
 	}
 	catch (regex_error& e){
@@ -72,11 +72,42 @@ bool tools::matches(smatch& sm, string s, string str_re) {
 	}
 
 	try {
-		if (!regex_match(s, sm, re))
+		//if (!regex_match(s, sm, re))
+		//	return false;
+		if (!regex_search(s, sm, re))
 			return false;
+
 	}
 	catch (regex_error& e){
 		cout << "tools::matches: regex_match returned error code: `";
+		cout << e.code() << "` when called with s: `" << s;
+		cout << "` and expression: `" << str_re << "`\n";
+		return false;
+	}
+
+	return true;
+}
+
+bool tools::replace_first(string &s, string str_re, string fmt) {// yeah
+
+	regex re;
+	try {
+		regex rete (str_re.c_str());//, regex_constants::format_first_only);
+		re.assign(rete);
+	}
+	catch (regex_error& e){
+		cout << "tools::replace_first: regex returned error code: `";
+		cout << e.code() << "` when evaluating expression: `" << str_re << "`\n";
+		throw e;
+	}
+
+	try {
+		//if (!regex_match(s, sm, re))
+		//	return false;
+		regex_replace(s, re, fmt);
+	}
+	catch (regex_error& e){
+		cout << "tools::replace_first: regex_match returned error code: `";
 		cout << e.code() << "` when called with s: `" << s;
 		cout << "` and expression: `" << str_re << "`\n";
 		return false;

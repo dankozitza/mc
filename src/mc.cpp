@@ -32,8 +32,8 @@ int help_message() {
 	// TODO:
 	//cout << "   mkreadme - Make a README.md file from ./program <arguments>.\n";
 	//cout << "              arguments is `help` by default.\n";
-	cout << "   mkhead   - Ensures that all the functions listed in the given\n";
-	cout << "              source files are found in the header file.\n";
+	cout << "   dec   	- Ensures that all the functions listed in the given\n";
+	cout << "              source files are declared properly.\n";
 	cout << "   env      - Displays the variables read from vfnmake.conf\n";
 	cout << "\n";
 	return EXIT_FAILURE;
@@ -84,7 +84,7 @@ void doc() {
 	}
 }
 
-void mkhead() {
+void dec() {
 	vector<string> fnames = Argv;
 
 	if (fnames.size() == 0) {
@@ -145,8 +145,8 @@ int main(int argc, char *argv[]) {
 	else if (!strcmp(argv[1], "doc")) {
 		doc();
 	}
-	else if (!strcmp(argv[1], "mkhead")) {
-		mkhead();
+	else if (!strcmp(argv[1], "dec")) {
+		dec();
 	}
 	else if (!strcmp(argv[1], "env")) {
 		env();

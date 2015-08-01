@@ -30,6 +30,7 @@ namespace tools {
 	bool matches(vector<string>& results, string s, string regex);
 	//bool matches(map<string, string>& results, string s, string regex);
 	bool matches(smatch& sm, string s, string regex);
+	bool replace_first(string &s, string str_re, string fmt);
 	void test_matches();
 }
 
