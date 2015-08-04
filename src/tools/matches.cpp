@@ -88,11 +88,15 @@ bool tools::matches(smatch& sm, string s, string str_re) {
 	return true;
 }
 
-bool tools::replace_first(string &s, string str_re, string fmt) {// yeah
+bool tools::replace(
+		string &s,
+		string str_re,
+		string fmt,
+		regex_constants::match_flag_type mf) {
 
 	regex re;
 	try {
-		regex rete (str_re.c_str());//, regex_constants::format_first_only);
+		regex rete (str_re.c_str(), mf);//, regex_constants::format_first_only);
 		re.assign(rete);
 	}
 	catch (regex_error& e){
