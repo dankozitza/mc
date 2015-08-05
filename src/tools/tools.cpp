@@ -347,9 +347,26 @@ void tools::form_scoped_declarations(
 		// here we only want definitions that have scope operators, we will use
 		// the scope to find the block of code that the declaration belongs!
 		string m[4];
-		// TODO: fix this
-		if (matches(m, line, R"(^(.*?)(\w+)\:\:(.*))"))
-			cout << "	`" << m[2] << "`: `" << m[1] << m[3] << "`.\n";
+
+		string nl = line;
+		replace_all(nl, R"(\n)", "TEMP_NEWLINE_REPLACEMENT2534324567");
+	
+		// remove everything after the last parenthesis
+		replace_first(nl, R"([^)]+$)", "");
+
+		// add the semicolon
+		nl += ";";
+
+		if (matches(m, nl, R"(^(.*?)(\w+)\:\:(.*)$)")) {
+			//cout << "	`" << m[2] << "`: `" << m[1] << m[3] << "`.\n";
+
+			nl = m[1] + m[3];
+			replace_all(nl, R"(TEMP_NEWLINE_REPLACEMENT2534324567)", "\n");
+
+			cout << "	`" << m[2] << "`: `" << nl << "`.\n";
+
+			sd[m[2]].push_back(nl);
+		}
 	}
 }
 
@@ -360,7 +377,8 @@ void tools::form_scoped_declarations(
 //
 // exit if sys_exit_val is not zero.
 //
-bool tools::require(int sys_exit_val, string msg) {
+bool tools::require(int sys_exit_val, string msg)
+{
 	if (sys_exit_val != 0) {
 		if (msg != "") {
 			cout << msg << "\n";
