@@ -88,7 +88,11 @@ bool tools::matches(smatch& sm, string s, string str_re) {
 	return true;
 }
 
-bool tools::replace(
+bool tools::replace_first(string &s, string str_re, string fmt) {
+	return replace_all(s, str_re, fmt, regex_constants::format_first_only);
+}
+
+bool tools::replace_all(
 		string &s,
 		string str_re,
 		string fmt,
@@ -96,22 +100,20 @@ bool tools::replace(
 
 	regex re;
 	try {
-		regex rete (str_re.c_str(), mf);//, regex_constants::format_first_only);
+		regex rete (str_re.c_str());//regex_constants::format_no_copy);
 		re.assign(rete);
 	}
 	catch (regex_error& e){
-		cout << "tools::replace_first: regex returned error code: `";
+		cout << "tools::replace_all: regex returned error code: `";
 		cout << e.code() << "` when evaluating expression: `" << str_re << "`\n";
 		throw e;
 	}
 
 	try {
-		//if (!regex_match(s, sm, re))
-		//	return false;
-		regex_replace(s, re, fmt);
+		s = regex_replace(s, re, fmt, mf);
 	}
 	catch (regex_error& e){
-		cout << "tools::replace_first: regex_match returned error code: `";
+		cout << "tools::replace_all: regex_match returned error code: `";
 		cout << e.code() << "` when called with s: `" << s;
 		cout << "` and expression: `" << str_re << "`\n";
 		return false;
@@ -226,4 +228,33 @@ void tools::test_matches() {
 
 	//if (m["2"] != "")
 	//	cout << "test failed!, match 2 [" << m["2"] << "] did not match!\n";
+}
+
+// test_replace
+//
+// A test for all the replace functions.
+//
+void tools::test_replace() {
+
+	string s = "subject";
+  	replace_all(s, R"((a|e|i|o|u))", "[$&]");
+
+	if (s != "s[u]bj[e]ct")
+		cout << "test 1 failed!, `" << s << "` should be `s[u]bj[e]ct`!\n";
+
+	replace_all(s, R"((\[|\]))", "");
+
+	if (s != "subject")
+		cout << "test 2 failed!, `" << s << "` should be `subject`!\n";
+
+	replace_first(s, R"(\w)", "S");
+
+	if (s != "Subject")
+		cout << "test 3 failed!, `" << s << "` should be `Subject`!\n";
+
+	s = "sub\nject";
+
+	replace_all(s, R"(\n)", "");
+	if (s != "subject")
+		cout << "test 4 failed!, `" << s << "` should be `subject`!\n";
 }

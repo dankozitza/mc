@@ -348,10 +348,9 @@ void tools::form_scoped_declarations(
 		// the scope to find the block of code that the declaration belongs!
 		string m[4];
 		// TODO: fix this
-		if (matches(m, line, R"(^(.*?)(\w+)\:\:(.*?)$)"))
+		if (matches(m, line, R"(^(.*?)(\w+)\:\:(.*))"))
 			cout << "	`" << m[2] << "`: `" << m[1] << m[3] << "`.\n";
 	}
-
 }
 
 // require
