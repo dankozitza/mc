@@ -32,7 +32,7 @@ int help_message() {
 	// TODO:
 	//cout << "   mkreadme - Make a README.md file from ./program <arguments>.\n";
 	//cout << "              arguments is `help` by default.\n";
-	cout << "   dec   	- Ensures that all the functions listed in the given\n";
+	cout << "   dec      - Ensures that all the functions listed in the given\n";
 	cout << "              source files are declared properly.\n";
 	cout << "   env      - Displays the variables read from vfnmake.conf\n";
 	cout << "\n";

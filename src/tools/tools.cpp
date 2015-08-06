@@ -75,7 +75,8 @@ void tools::signals_callback_handler(int signum) {
 // signals
 //
 // replacement for signal that allows multiple callback handlers to be used for
-// each signal.
+// each signal. If a callback handler supplied to signals calls `exit`, all
+// uncalled handlers in the SigHandlers vector will not be called.
 // 
 // signal(SIGINT, signals_callback_handler) must be called for program to exit
 // on interrupt.
@@ -315,7 +316,7 @@ void tools::get_func_defs(vector<string>& definitions, string fname) {
 		//replace_first(line, R"(//)", "//_replacement_blarg_blarg");
 
 		if (multi_line_def) {
-			cout << "tools::get_func_defs: matched line: `" << line << "`.\n";
+//			cout << "tools::get_func_defs: matched line: `" << line << "`.\n";
 			definitions[definitions.size()-1].append("\n" + line);
 			if (matches(line, R"(\{)"))
 				multi_line_def = false;
@@ -325,7 +326,7 @@ void tools::get_func_defs(vector<string>& definitions, string fname) {
 
 		// TODO: make this work on multi-line definitions
 		if (matches(line, R"(^\w.*?\w+\(.*\)? *\{?)")) {
-			cout << "tools::get_func_defs: matched line: `" << line << "`.\n";
+//			cout << "tools::get_func_defs: matched line: `" << line << "`.\n";
 			definitions.push_back(line);
 
 			if (!matches(line, R"(\{)"))
@@ -368,6 +369,9 @@ void tools::form_scoped_declarations(
 			sd[m[2]].push_back(nl);
 		}
 	}
+}
+
+void update_namespace() {
 }
 
 // require
