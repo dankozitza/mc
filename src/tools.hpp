@@ -24,8 +24,9 @@ namespace tools {
 			map<string, vector<string>> &sd,
 			vector<string> defs);
 	void update_namespaces(
-			map<string, vector<string>> scopedecs,
-			string header_fname = "");
+			string namespace_name,
+			vector<string> new_declarations,
+			string header_fname);
 	bool require(int sys_exit_val, string msg = "");
 	bool require(bool func_return_val, string msg = "");
 	bool matches(string s, string str_re);

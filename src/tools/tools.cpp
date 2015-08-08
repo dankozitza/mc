@@ -5,10 +5,10 @@
 // Created by Daniel Kozitza
 //
 
+#include "../tools.hpp"
 #include <iostream>
 #include <fstream>
 #include <csignal>
-#include "../tools.hpp"
 
 // get_vfnmake_conf
 //
@@ -371,12 +371,9 @@ void tools::form_scoped_declarations(
 }
 
 void tools::update_namespaces(
-		map<string, vector<string>>,
+		string namespace_name,
+		vector<string> new_declarations,
 		string header_fname) {
-
-	if (header_fname == "") {
-		//search through src dir
-	}
 
 	cout << "tools::update_namespaces: testing\n";
 }
