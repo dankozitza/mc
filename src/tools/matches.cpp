@@ -122,6 +122,10 @@ bool tools::replace_all(
 	return true;
 }
 
+bool tools::find_in_file(string str_re, string fname) {
+	return true;
+}
+
 // test_matches
 //
 // A test for all the matches functions.

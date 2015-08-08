@@ -23,6 +23,9 @@ namespace tools {
 	void form_scoped_declarations(
 			map<string, vector<string>> &sd,
 			vector<string> defs);
+	void update_namespaces(
+			map<string, vector<string>> scopedecs,
+			string header_fname = "");
 	bool require(int sys_exit_val, string msg = "");
 	bool require(bool func_return_val, string msg = "");
 	bool matches(string s, string str_re);
@@ -39,6 +42,8 @@ namespace tools {
 	
 	void test_matches();
 	void test_replace();
+	void get_includes(vector<string>& includes, string fname);
+	bool find_in_file(string str_re, string fname);
 }
 
 #endif

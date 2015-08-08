@@ -90,6 +90,11 @@ void dec() {
 	if (fnames.size() == 0) {
 		cout << "mc: automatic source file detection is under construction.\n";
 	}
+
+	map<string, vector<string>> scopedecs;
+	// vector of all user defined includes found in fnames
+	vector<string> includes; 
+
 	for (int fn_i = 0; fn_i < fnames.size(); fn_i++) {
 		cout << "mc: getting function declarations from `";
 		cout << fnames[fn_i] << "`.\n";
@@ -99,8 +104,55 @@ void dec() {
 		vector<string> funcdefs;
 		get_func_defs(funcdefs, fnames[fn_i]);
 
-		map<string, vector<string>> scopedecs;
 		form_scoped_declarations(scopedecs, funcdefs);
+
+		get_includes(includes, fnames[fn_i]);
+	}
+
+	//do this for each namespace found?
+	for (const auto nsname : scopedecs) {
+
+		// now scopedecs is pupulated with all the scoped declarations found in
+		// the files fnames. Search for the header file by first checking the
+		// user defined includes in the source files for the namespace definition.
+		bool found_header_fname = false;
+		string header_fname;
+
+		// TODO: should try the src dir from all source files given
+		string src_dir = fnames[0];
+		replace_first(src_dir, R"([^/]+$)", "");
+
+		for (const auto inc : includes) {
+			string str_re = "^namespace " + nsname.first + "\\W";
+			cout << "mc::dec: trying regex `" << str_re << "` in file `";
+			cout << src_dir << inc << "`.\n";
+			// TODO: make sure str_re is properly escaped
+			if (find_in_file(str_re, inc)) {
+				cout << "	found the header file!\n";
+				found_header_fname = true;
+				header_fname = src_dir + inc;
+				break;
+			}
+		}
+
+		//if (!found_header_fname) {
+		//	// here try to replace the extention of fnames with hpp then h
+		//}
+
+		//if (!found_header_fname) {
+		//	// here try to replace the extention and move up one dir
+		//}
+		//
+		//if (!found_header_fname) {
+		//	// here try to look in the fnames files themselves
+		//}
+		//
+		//if (!found_header_fname) {
+		//	// here check every file found in the src dir
+		//}
+		//
+		//
+		update_namespaces(scopedecs, header_fname);
 	}
 }
 

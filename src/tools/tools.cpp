@@ -5,10 +5,10 @@
 // Created by Daniel Kozitza
 //
 
-#include "../tools.hpp"
 #include <iostream>
 #include <fstream>
 #include <csignal>
+#include "../tools.hpp"
 
 // get_vfnmake_conf
 //
@@ -359,7 +359,6 @@ void tools::form_scoped_declarations(
 		nl += ";";
 
 		if (matches(m, nl, R"(^(.*?)(\w+)\:\:(.*)$)")) {
-			//cout << "	`" << m[2] << "`: `" << m[1] << m[3] << "`.\n";
 
 			nl = m[1] + m[3];
 			replace_all(nl, R"(TEMP_NEWLINE_REPLACEMENT2534324567)", "\n");
@@ -371,7 +370,15 @@ void tools::form_scoped_declarations(
 	}
 }
 
-void update_namespace() {
+void tools::update_namespaces(
+		map<string, vector<string>>,
+		string header_fname) {
+
+	if (header_fname == "") {
+		//search through src dir
+	}
+
+	cout << "tools::update_namespaces: testing\n";
 }
 
 // require
@@ -408,3 +415,39 @@ bool tools::require(bool func_return_val, string msg) {
 	}
 }
 
+void tools::get_includes(vector<string>& includes, string fname) {
+	cout << "tools::get_includes: opening file `" << fname << "`.\n";
+
+	ifstream ifh;
+	ifh.open(fname, ifstream::in);
+	if (!ifh.is_open()) {
+		cout << "tools::get_includes: couldn't open `" << fname << "`.\n";
+		return;
+	}
+
+	bool multi_line_def = false;
+	while (ifh.peek() != EOF) {
+		string line;
+		getline(ifh, line);
+
+		string m[2];
+		if (matches(m, line, R"(^#include \"(.*)\")")) {
+			cout << "	matched line: `" << line << "`, m[1]: `" << m[1] << "`.\n";
+
+			// make sure there's no duplicates
+			bool dup = false;
+			for (const auto item : includes) {
+				if (item == m[1]) {
+					cout << "	already have `" << m[1] << "`.\n";
+					dup = true;
+					break;
+				}
+			}
+
+			if (!dup)
+				includes.push_back(m[1]);
+		}
+	}
+
+	ifh.close();
+}
