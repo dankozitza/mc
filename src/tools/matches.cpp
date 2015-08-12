@@ -7,6 +7,7 @@
 
 #include "../tools.hpp"
 #include <iostream>
+#include <fstream>
 
 bool tools::matches(string s, string str_re) {
 	smatch sm;
@@ -123,7 +124,29 @@ bool tools::replace_all(
 }
 
 bool tools::find_in_file(string str_re, string fname) {
-	return true;
+
+	cout << "tools::find_in_file: opening file `" << fname << "`.\n";
+
+	ifstream ifh;
+	ifh.open(fname, ifstream::in);
+	if (!ifh.is_open()) {
+		cout << "tools::find_in_file: couldn't open `" << fname << "`.\n";
+		return false;
+	}
+	
+	while (ifh.peek() != EOF) {
+		string line;
+		getline(ifh, line);
+	
+		if (matches(line, str_re)) {
+			cout << "   matched line: `" << line << "`.\n";
+
+			ifh.close();
+			return true;
+		}
+	}
+
+	return false;
 }
 
 // test_matches

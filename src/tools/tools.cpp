@@ -422,7 +422,6 @@ void tools::get_includes(vector<string>& includes, string fname) {
 		return;
 	}
 
-	bool multi_line_def = false;
 	while (ifh.peek() != EOF) {
 		string line;
 		getline(ifh, line);

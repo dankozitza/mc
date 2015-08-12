@@ -112,6 +112,9 @@ void dec() {
 	//do this for each namespace found?
 	for (const auto nsname : scopedecs) {
 
+		cout << "mc::dec: searching for namespace definition called `";
+		cout << nsname.first << "`.\n";
+
 		// now scopedecs is pupulated with all the scoped declarations found in
 		// the files fnames. Search for the header file by first checking the
 		// user defined includes in the source files for the namespace definition.
@@ -127,13 +130,15 @@ void dec() {
 			cout << "mc::dec: trying regex `" << str_re << "` in file `";
 			cout << src_dir << inc << "`.\n";
 			// TODO: make sure str_re is properly escaped
-			if (find_in_file(str_re, inc)) {
+			if (find_in_file(str_re, src_dir + inc)) {
 				cout << "	found the header file!\n";
 				found_header_fname = true;
 				header_fname = src_dir + inc;
 				break;
 			}
 		}
+
+		// TODO: finish all these methods of searching for the header_fname
 
 		//if (!found_header_fname) {
 		//	// here try to replace the extention of fnames with hpp then h
@@ -150,9 +155,12 @@ void dec() {
 		//if (!found_header_fname) {
 		//	// here check every file found in the src dir
 		//}
-		//
-		//
-		update_namespaces(scopedecs, header_fname);
+
+		require(
+			found_header_fname,
+			"mc::dec: could not find namespace `" + nsname.first + "`.");
+
+		update_namespaces(nsname.first, nsname.second, header_fname);
 	}
 }
 
