@@ -146,6 +146,7 @@ bool tools::find_in_file(string str_re, string fname) {
 		}
 	}
 
+	ifh.close();
 	return false;
 }
 

@@ -160,7 +160,7 @@ void dec() {
 			found_header_fname,
 			"mc::dec: could not find namespace `" + nsname.first + "`.");
 
-		update_namespaces(nsname.first, nsname.second, header_fname);
+		update_namespace(nsname.first, nsname.second, header_fname);
 	}
 }
 

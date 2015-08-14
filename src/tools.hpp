@@ -23,10 +23,10 @@ namespace tools {
 	void form_scoped_declarations(
 			map<string, vector<string>> &sd,
 			vector<string> defs);
-	void update_namespaces(
+	void update_namespace(
 			string namespace_name,
 			vector<string> new_declarations,
-			string header_fname);
+			string fname);
 	bool require(int sys_exit_val, string msg = "");
 	bool require(bool func_return_val, string msg = "");
 	bool matches(string s, string str_re);

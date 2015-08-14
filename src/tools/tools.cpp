@@ -370,12 +370,121 @@ void tools::form_scoped_declarations(
 	}
 }
 
-void tools::update_namespaces(
+// update_namespace
+//
+//	updates the namespace `namespace_name` with the declarations found in the
+//	`new_declarations` vector in the file found at `fname`
+//
+//	   - reads fname retreiving an old list of declarations
+//    - compares the old list with the new list
+//    - 
+//
+void tools::update_namespace(
 		string namespace_name,
 		vector<string> new_declarations,
-		string header_fname) {
+		string fname) {
 
-	cout << "tools::update_namespaces: testing\n";
+	// declarations found in the existing header
+	vector<string> old_declarations;
+
+	// declarations only found in the new vector
+	// assume these are to be added to the header
+	vector<string> only_in_new;
+
+ 	// declarations only found in the old vector
+	// prompt the user to decide on action
+	vector<string> only_in_old;
+
+	// temporary filename for making updated file
+	string tfname = fname + "_mc_updated_decs";
+	bool made_change = false;
+
+	cout << "tools::update_namespaces: opening file `" << fname << "`.\n";
+
+	ifstream ifh;
+	ifh.open(fname, ifstream::in);
+	if (!ifh.is_open()) {
+		cout << "tools::update_namespaces: couldn't open `" << fname << "`.\n";
+		return;
+	}
+
+	cout << "tools::update_namespaces: opening file `" << tfname << "`.\n";
+
+	ofstream ofh;
+	ofh.open(tfname, ofstream::out);
+	if (!ofh.is_open()) {
+		cout << "tools::update_namespaces: couldn't open `" << tfname << "`.\n";
+		return;
+	}
+
+	while (ifh.peek() != EOF) {
+		string line;
+		getline(ifh, line);
+
+		// create a regular expression to match the namespace definition
+		string ns_def_re = "^namespace " + namespace_name + "\\W";
+
+		// begining of namespace block
+		if (matches(line, ns_def_re)) {
+
+			bool multi_line_dec = false;
+			// now collect all the old declarations
+			while (ifh.peek() != EOF && !matches(line, R"(})")) {
+				getline(ifh, line);
+
+				// skip comments
+				if (matches(line, R"(^\s*//)"))
+					continue;
+
+				if (multi_line_dec) {
+					// get the remaining lines of the declaration
+					old_declarations[old_declarations.size()-1].append("\n" + line);
+					
+					//cout << "	extra line: `" << line << "`.\n";
+
+					if (matches(line, R"(;)"))
+						multi_line_dec = false;
+					continue;
+				}
+
+				// try to match a function declaration
+				string m[3];
+				if (matches(m, line, R"(^.*\s(.*)\()")) {
+
+					//cout << "	found declaration: `" << line << "`.\n";
+					//cout << "		m[1]: `" << m[1] << "`.\n";
+
+					// here have a chance to get a copy of the indent
+					old_declarations.push_back(line);
+
+					if (!matches(line, R"(;)"))
+						multi_line_dec = true;
+
+				}
+
+			}
+
+			cout << "	old_declarations:\n\n";
+			for (const auto item : old_declarations)
+				cout << item << endl;
+			cout << endl;
+
+			// now that we have old_declarations compare it to new_declarations
+			// and populate only_in_old and only_in_new
+
+			// form the new namespace definition and write it to ofh
+			
+		}
+		else {
+			// copy the lines to the new file
+			ofh << line << endl;
+		}
+	}
+
+	ofh.close();
+	ifh.close();
+
+	cout << "tools::update_namespaces: testing complete\n";
 }
 
 // require
