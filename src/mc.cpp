@@ -155,6 +155,12 @@ void dec() {
 		//if (!found_header_fname) {
 		//	// here check every file found in the src dir
 		//}
+		//
+		cout << "mc::dec: new_declarations:\n\n";
+		for (const auto item : nsname.second)
+			cout << item << endl;
+	
+		cout << endl;
 
 		require(
 			found_header_fname,

@@ -395,9 +395,13 @@ void tools::update_namespace(
 	// prompt the user to decide on action
 	vector<string> only_in_old;
 
+	vector<string> in_both;
+
+
 	// temporary filename for making updated file
 	string tfname = fname + "_mc_updated_decs";
 	bool made_change = false;
+	string indent = "	";
 
 	cout << "tools::update_namespaces: opening file `" << fname << "`.\n";
 
@@ -427,23 +431,39 @@ void tools::update_namespace(
 		// begining of namespace block
 		if (matches(line, ns_def_re)) {
 
-			bool multi_line_dec = false;
+			// this is a vector of the entire namespace. function declarations
+			// are replaced with a placeholder.
+			vector<string> ns_block;
+			ns_block.push_back(line);
+
 			// now collect all the old declarations
+			bool multi_line_dec = false;
 			while (ifh.peek() != EOF && !matches(line, R"(})")) {
 				getline(ifh, line);
 
 				// skip comments
-				if (matches(line, R"(^\s*//)"))
+				if (matches(line, R"(^\s*//)")) {
+					ns_block.push_back(line);
 					continue;
+				}
 
 				if (multi_line_dec) {
 					// get the remaining lines of the declaration
+					//
+					string new_line = line;
+					replace_all(new_line, R"(^	)", "");
 					old_declarations[old_declarations.size()-1].append("\n" + line);
 					
 					//cout << "	extra line: `" << line << "`.\n";
 
-					if (matches(line, R"(;)"))
+					if (matches(line, R"(;)")) {
 						multi_line_dec = false;
+						//for (const auto new_dec : new_declarations) {
+						//	string spaceless_old_dec = line;
+						//	replace_first(spaceless_old_dec, R"(^\s+)", "");
+						//	cout << "	spaceless_old_dec: `" << spaceless_old_dec << "`.\n";
+						//}
+					}
 					continue;
 				}
 
@@ -455,19 +475,157 @@ void tools::update_namespace(
 					//cout << "		m[1]: `" << m[1] << "`.\n";
 
 					// here have a chance to get a copy of the indent
-					old_declarations.push_back(line);
+					//
+					// get the indent and set 
+					string m2[4];
+					if (matches(m, line, R"(^(\s+)(.*)$)")) {
+						indent = m[1];
+						old_declarations.push_back(m[2]);
+					}
+					else {
+						old_declarations.push_back(line);
+					}
+
+					// put placeholder in ns_block
+					char num[33];
+					sprintf(num, "%d", old_declarations.size() - 1);
+					ns_block.push_back("placeholder " + string(num));
 
 					if (!matches(line, R"(;)"))
 						multi_line_dec = true;
 
 				}
-
+				else {
+					// if the line is not a function declaration just put it in
+					ns_block.push_back(line);
+				}
 			}
 
-			cout << "	old_declarations:\n\n";
-			for (const auto item : old_declarations)
+
+			// replace placeholders in ns_block and write it to ofh
+			//
+			//else {
+
+			// remove preceding spaces from old_dec
+			
+			//for (int i = 0; i < old_declarations.size(); i++) {
+			//	string m[2];
+			//	string od = old_declarations[i];
+			//	if (matches(m, od, R"(^(\s+))"))
+			//		indent = m[1];
+
+			//	replace_first(od, R"(^\s+)", "");
+			//	old_declarations[i].assign(od);
+			//}
+
+			for (auto &od : old_declarations)
+				replace_all(od, R"(\n	)", "\n");
+
+			// begin comparing lists
+
+			// get the only_in_old list and replace placeholders for declarations
+			// that are found in both new and old lists
+			for (int odi = 0; odi < old_declarations.size(); odi++) {
+				string old_dec = old_declarations[odi];
+				bool found = false;
+				for (const auto new_dec : new_declarations) {
+
+					if (old_dec == new_dec) {
+					cout << "\n	old_dec: `" << old_dec << "`\n	new_dec: `";
+					cout << new_dec << "`\n";
+						cout << "	^^^match!\n";
+						found = true;
+						// find the placeholder to replace since this declaration is
+						// in both new and old lists.
+						for (int i = 0; i < ns_block.size(); i++) {
+							char re[30];
+							sprintf(re, "^placeholder %d$", odi);
+							if (matches(ns_block[i], string(re))) {
+
+								ns_block[i] = indent + old_dec;
+								break;
+							}
+						}
+						break;
+					}
+				}
+				if (!found) {
+					only_in_old.push_back(old_dec);
+				}
+			}
+
+			cout << "	only_in_old:\n\n";
+			for (const auto item : only_in_old)
 				cout << item << endl;
 			cout << endl;
+
+			// get the only_in_new list
+			for (const auto new_dec : new_declarations) {
+				bool found = false;
+				for (const auto old_dec : old_declarations) {
+					if (new_dec == old_dec)
+						found = true;
+				}
+				if (!found) {
+					only_in_new.push_back(new_dec);
+				}
+			}
+
+			cout << "	only_in_new:\n\n";
+			for (const auto item : only_in_new)
+				cout << item << endl;
+			cout << endl;
+
+			cout << "	ns_block:\n\n";
+			for (const auto item : ns_block)
+				cout << item << endl;
+			cout << endl;
+
+
+			// prompt user about what to do for each item in the ony_in_old vector
+			// remove replaced declarations from the new_declarations vector
+			//
+			for (const auto od : only_in_old) {
+
+				string nice_od = od;
+				replace_all(
+						nice_od,
+						R"(\n)",
+						"`\n		                    `");
+
+				cout << "	namespace has extra declaration:\n\n		                    `";
+				cout << nice_od << "`.\n\n	commands:\n\n";
+				cout << "		l - leave it (default)\n";
+				cout << "		r - remove it\n";
+				for (int i = 0; i < only_in_new.size(); i++) {
+					cout << "		" << i << " - replace it with `";
+
+					string nice_nd = only_in_new[i];
+					replace_all(nice_nd, R"(\n)", "`\n		                    `");
+					cout << nice_nd << "`\n";
+				}
+				cout << "\n	enter command: ";
+
+				string opt;
+				getline(cin, opt);
+
+				cout << "	yeah: `" << atoi(opt.c_str()) << "`.\n";
+			}
+
+			// add only_in_new to the ns_block
+
+			// instead of collecting all of the old declarations compare each
+			// one against the new list individually, this way documentation
+			// and variable declarations are left in their original places.
+			// This way only replace the line of the function declarations
+			//	bool found = false;
+
+			//}
+
+			//cout << "	old_declarations:\n\n";
+			//for (const auto item : old_declarations)
+			//	cout << item << endl;
+			//cout << endl;
 
 			// now that we have old_declarations compare it to new_declarations
 			// and populate only_in_old and only_in_new
