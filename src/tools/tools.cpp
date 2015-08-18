@@ -421,6 +421,15 @@ void tools::update_namespace(
 		return;
 	}
 
+	// destroy_targets function will remove this at exit
+	Targets.push_back(tfname);
+
+	// only want to call atexit once.
+	if (!CalledAtexit) {
+		CalledAtexit = true;
+		atexit(destroy_targets);
+	}
+
 	while (ifh.peek() != EOF) {
 		string line;
 		getline(ifh, line);
@@ -458,11 +467,6 @@ void tools::update_namespace(
 
 					if (matches(line, R"(;)")) {
 						multi_line_dec = false;
-						//for (const auto new_dec : new_declarations) {
-						//	string spaceless_old_dec = line;
-						//	replace_first(spaceless_old_dec, R"(^\s+)", "");
-						//	cout << "	spaceless_old_dec: `" << spaceless_old_dec << "`.\n";
-						//}
 					}
 					continue;
 				}
@@ -576,10 +580,6 @@ void tools::update_namespace(
 				cout << item << endl;
 			cout << endl;
 
-			cout << "	ns_block:\n\n";
-			for (const auto item : ns_block)
-				cout << item << endl;
-			cout << endl;
 
 
 			// prompt user about what to do for each item in the ony_in_old vector
@@ -604,13 +604,68 @@ void tools::update_namespace(
 					replace_all(nice_nd, R"(\n)", "`\n		                    `");
 					cout << nice_nd << "`\n";
 				}
-				cout << "\n	enter command: ";
 
-				string opt;
-				getline(cin, opt);
+				// get old_declarations index: `odi`
+				int odi = -1;
+				for (int i = 0; i < old_declarations.size(); i++) {
+					if (old_declarations[i] == od) {
+						odi = i;
+						break;
+					}
+				}
 
-				cout << "	yeah: `" << atoi(opt.c_str()) << "`.\n";
+				// find the placeholder index for this declaration
+				int phi = -1;
+				for (int i = 0; i < ns_block.size(); i++) {
+					char re[30];
+					sprintf(re, "^placeholder %d$", odi);
+					if (matches(ns_block[i], string(re))) {
+						phi = i;
+						break;
+					}
+				}
+
+				// interact with user and replace the placeholder in ns_block with
+				// the old declaration, a new declaration, or remove the line.
+				while (true) {
+
+					cout << "\n	enter command: ";
+					string opt;
+					getline(cin, opt);
+
+					if (opt == "l" || opt == "") {
+						// use od and leave the file as is
+						ns_block[phi] = indent + od;
+						break;
+					}
+					else if (opt == "r") {
+						// remove the placeholder line entirely
+						ns_block.erase(ns_block.begin()+phi);
+						break;
+					}
+					else if (matches(opt, R"(^\d+$)")
+							&& atoi(opt.c_str()) < only_in_new.size()
+							&& atoi(opt.c_str()) > -1) {
+						// replace it with only_in_new[opt]
+						ns_block[phi] = indent + only_in_new[atoi(opt.c_str())];
+
+						// remove the declaration from the only_in_new vector
+						only_in_new.erase(only_in_new.begin()+atoi(opt.c_str()));
+						break;
+					}
+
+					cout << "	invalid option!";
+				}
+					
+
+				//cout << "	yeah: `" << atoi(opt.c_str()) << "`.\n";
 			}
+
+			cout << "	ns_block:\n\n";
+			for (const auto item : ns_block)
+				cout << item << endl;
+			cout << endl;
+
 
 			// add only_in_new to the ns_block
 
