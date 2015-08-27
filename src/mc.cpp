@@ -181,9 +181,21 @@ void env() {
 	cout << "\n";
 }
 
+
+
 int main(int argc, char *argv[]) {
 
 	signal(SIGINT, signals_callback_handler);
+
+	commands cmds;
+	cmds.handle("help", help_message, "displays this message"},
+		{"makefile", makefile},
+		{"build", build},
+		{"rebuild", rebuild},
+		{"run", run},
+		{"doc", doc},
+		{"dec", dec},
+		{"env", env}};
 
 	if (argc < 2)
 		return help_message();
@@ -193,38 +205,77 @@ int main(int argc, char *argv[]) {
 		Args.append(string(" ").append(argv[i]));
 	}
 
-	if (!strcmp(argv[1], "help")) {
-		help_message();
-	}
-	else if (!strcmp(argv[1], "makefile")) {
-		VfnmakeSystemCall += Args;
-		makefile();
-	}
-	else if (!strcmp(argv[1], "build")) {
-		build();
-	}
-	else if (!strcmp(argv[1], "rebuild")) {
-		rebuild();
-	}
-	else if (!strcmp(argv[1], "run")) {
-		run();
-	}
-	else if (!strcmp(argv[1], "doc")) {
-		doc();
-	}
-	else if (!strcmp(argv[1], "dec")) {
-		dec();
-	}
-	else if (!strcmp(argv[1], "env")) {
-		env();
-	}
-	else {
-		// didn't recognize an argument!
+	if (
+		VfnmakeSystemCall += Args; makefile();
+
+	// make map of ints and use switch instead of if-else
+	map<string, const int> commands = {
+		{"help", 0},
+		{"makefile", 1},
+		{"build", 2},
+		{"rebuild", 3},
+		{"run", 4},
+		{"doc", 5},
+		{"dec", 6},
+		{"env", 7}};
+
+	switch (commands[string(argv[1])]) {
+	case 0: help_message();
+		break;
+	case 1: VfnmakeSystemCall += Args; makefile();
+		break;
+	case 2: build();
+		break;
+	case 3: rebuild();
+		break;
+	case 4: run();
+		break;
+	case 5: doc();
+		break;
+	case 6: dec();
+		break;
+	case 7: env();
+		break;
+	default:
+		// didn't recognize command!
 		for (int i = 1; i < argc; i++) {
-			cout << "mc: unrecognized argument: `" << argv[i] << "`.\n";
+			cout << "mc: unrecognized command: `" << argv[i] << "`.\n";
 		}
 		return help_message();
 	}
+
+//	if (!strcmp(argv[1], "help")) {
+//		help_message();
+//	}
+//	else if (!strcmp(argv[1], "makefile")) {
+//		VfnmakeSystemCall += Args;
+//		makefile();
+//	}
+//	else if (!strcmp(argv[1], "build")) {
+//		build();
+//	}
+//	else if (!strcmp(argv[1], "rebuild")) {
+//		rebuild();
+//	}
+//	else if (!strcmp(argv[1], "run")) {
+//		run();
+//	}
+//	else if (!strcmp(argv[1], "doc")) {
+//		doc();
+//	}
+//	else if (!strcmp(argv[1], "dec")) {
+//		dec();
+//	}
+//	else if (!strcmp(argv[1], "env")) {
+//		env();
+//	}
+//	else {
+//		// didn't recognize command!
+//		for (int i = 1; i < argc; i++) {
+//			cout << "mc: unrecognized command: `" << argv[i] << "`.\n";
+//		}
+//		return help_message();
+//	}
 
 	return 0;
 }
