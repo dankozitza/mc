@@ -188,7 +188,12 @@ int main(int argc, char *argv[]) {
 	signal(SIGINT, signals_callback_handler);
 
 	commands cmds;
-	cmds.handle("help", help_message, "displays this message"},
+	cmds.handle(
+			"help",
+			help_message,
+			"displays this message",
+			"USAGE: mc help [command]");
+},
 		{"makefile", makefile},
 		{"build", build},
 		{"rebuild", rebuild},
