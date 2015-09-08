@@ -15,6 +15,7 @@
 using namespace std;
 
 namespace tools {
+	void only_in_header();
 	bool get_vfnmake_conf(unordered_map<string, string>& config);
 	void signals_callback_handler(int signum);
 	void signals(int sig, void (*callback_func)(int));

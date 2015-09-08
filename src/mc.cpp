@@ -187,20 +187,20 @@ int main(int argc, char *argv[]) {
 
 	signal(SIGINT, signals_callback_handler);
 
-	commands cmds;
-	cmds.handle(
-			"help",
-			help_message,
-			"displays this message",
-			"USAGE: mc help [command]");
-},
-		{"makefile", makefile},
-		{"build", build},
-		{"rebuild", rebuild},
-		{"run", run},
-		{"doc", doc},
-		{"dec", dec},
-		{"env", env}};
+	//commands cmds;
+	//cmds.handle(
+	//		"help",
+	//		help_message,
+	//		"displays this message",
+	//		"USAGE: mc help [command]");
+//},
+	//	{"makefile", makefile},
+	//	{"build", build},
+	//	{"rebuild", rebuild},
+	//	{"run", run},
+	//	{"doc", doc},
+	//	{"dec", dec},
+	//	{"env", env}};
 
 	if (argc < 2)
 		return help_message();
@@ -209,9 +209,6 @@ int main(int argc, char *argv[]) {
 		Argv.push_back(string(argv[i]));
 		Args.append(string(" ").append(argv[i]));
 	}
-
-	if (
-		VfnmakeSystemCall += Args; makefile();
 
 	// make map of ints and use switch instead of if-else
 	map<string, const int> commands = {

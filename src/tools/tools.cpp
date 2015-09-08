@@ -56,7 +56,7 @@ vector<void (*)(int)> SigHandlers[16];
 void tools::signals_callback_handler(int signum) {
 
 	cout << "\ntools::signals_callback_handler: caught signal `";
-	cout << signum << "`.\n";
+	cout << signum << "`\n";
 
 	if (signum < 0 || signum > 15) {
 		cout << "	signal number out of bounds!!!\n";
@@ -89,7 +89,7 @@ vector<string> Targets;
 
 void destroy_targets() {
 	for (const auto fname : Targets) {
-		cout << "tools::destroy_targets: removing `" << fname << "`.\n";
+		cout << "tools::destroy_targets: removing `" << fname << "`\n";
 		remove(fname.c_str());
 	}
 }
@@ -117,7 +117,7 @@ class suicide_bomber {
 				// boom only happens when the program exits nicely
 				cout << "tools::suicide_bomber: DIE YOU GODLESS HEATHEN!!!!\n";
 				remove(file_name.c_str());
-				cout << "	removed `" <<  file_name << "`.\n";
+				cout << "	removed `" <<  file_name << "`\n";
 			}
 		}
 		~suicide_bomber() {
@@ -144,14 +144,14 @@ void tools::add_documentation(string fname) {
 	ifstream ifh;
 	ifh.open(fname, ifstream::in);
 	if (!ifh.is_open()) {
-		cout << "tools::add_documentation: couldn't open `" << fname << "`.\n";
+		cout << "tools::add_documentation: couldn't open `" << fname << "`\n";
 		return;
 	}
 
 	ofstream ofh;
 	ofh.open(tfname, ofstream::out);
 	if (!ofh.is_open()) {
-		cout << "tools::add_documentation: couldn't open `" << tfname << "`.\n";
+		cout << "tools::add_documentation: couldn't open `" << tfname << "`\n";
 		return;
 	}
 
@@ -183,7 +183,7 @@ void tools::add_documentation(string fname) {
 				string short_fname = fname;
 				string m[2];
 				if (matches(m, fname, R"(/(.*?)$)")) {
-					cout << "	short_fname: `" << m[1] << "`.\n";
+					cout << "	short_fname: `" << m[1] << "`\n";
 					short_fname = m[1];
 				}
 				
@@ -266,15 +266,15 @@ void tools::add_documentation(string fname) {
 	}
 
 	cout << "tools::add_documentation: finished!\n	new file is `" << tfname;
-	cout << "`.\n\n";
+	cout << "`\n\n";
 	cout << "	overwrite existing file? (Y/n): ";
 
 	getline(cin, answer);
 
 	if (answer != "n") {
-		cout << "	removing `" << fname << "`.\n";
+		cout << "	removing `" << fname << "`\n";
 		remove(fname.c_str());
-		cout << "	renaming `" << tfname << "` to `" << fname << "`.\n";
+		cout << "	renaming `" << tfname << "` to `" << fname << "`\n";
 		rename(tfname.c_str(), fname.c_str());
 	}
 	else {
@@ -298,7 +298,7 @@ void tools::get_func_defs(vector<string>& definitions, string fname) {
 	ifstream ifh;
 	ifh.open(fname, ifstream::in);
 	if (!ifh.is_open()) {
-		cout << "tools::get_func_defs: couldn't open `" << fname << "`.\n";
+		cout << "tools::get_func_defs: couldn't open `" << fname << "`\n";
 		return;
 	}
 
@@ -316,7 +316,7 @@ void tools::get_func_defs(vector<string>& definitions, string fname) {
 		//replace_first(line, R"(//)", "//_replacement_blarg_blarg");
 
 		if (multi_line_def) {
-//			cout << "tools::get_func_defs: matched line: `" << line << "`.\n";
+//			cout << "tools::get_func_defs: matched line: `" << line << "`\n";
 			definitions[definitions.size()-1].append("\n" + line);
 			if (matches(line, R"(\{)"))
 				multi_line_def = false;
@@ -326,7 +326,7 @@ void tools::get_func_defs(vector<string>& definitions, string fname) {
 
 		// TODO: make this work on multi-line definitions
 		if (matches(line, R"(^\w.*?\w+\(.*\)? *\{?)")) {
-//			cout << "tools::get_func_defs: matched line: `" << line << "`.\n";
+//			cout << "tools::get_func_defs: matched line: `" << line << "`\n";
 			definitions.push_back(line);
 
 			if (!matches(line, R"(\{)"))
@@ -363,7 +363,7 @@ void tools::form_scoped_declarations(
 			nl = m[1] + m[3];
 			replace_all(nl, R"(TEMP_NEWLINE_REPLACEMENT2534324567)", "\n");
 
-			cout << "	`" << m[2] << "`: `" << nl << "`.\n";
+			cout << "	`" << m[2] << "`: `" << nl << "`\n";
 
 			sd[m[2]].push_back(nl);
 		}
@@ -403,26 +403,26 @@ void tools::update_namespace(
 	bool made_change = false;
 	string indent = "	";
 
-	cout << "tools::update_namespaces: opening file `" << fname << "`.\n";
+	cout << "tools::update_namespaces: opening file `" << fname << "`\n";
 
 	ifstream ifh;
 	ifh.open(fname, ifstream::in);
 	if (!ifh.is_open()) {
-		cout << "tools::update_namespaces: couldn't open `" << fname << "`.\n";
+		cout << "tools::update_namespaces: couldn't open `" << fname << "`\n";
 		return;
 	}
 
-	cout << "tools::update_namespaces: opening file `" << tfname << "`.\n";
+	cout << "tools::update_namespaces: opening file `" << tfname << "`\n";
 
 	ofstream ofh;
 	ofh.open(tfname, ofstream::out);
 	if (!ofh.is_open()) {
-		cout << "tools::update_namespaces: couldn't open `" << tfname << "`.\n";
+		cout << "tools::update_namespaces: couldn't open `" << tfname << "`\n";
 		return;
 	}
 
 	// destroy_targets function will remove this at exit
-	Targets.push_back(tfname);
+	//Targets.push_back(tfname);
 
 	// only want to call atexit once.
 	if (!CalledAtexit) {
@@ -463,7 +463,7 @@ void tools::update_namespace(
 					replace_all(new_line, R"(^	)", "");
 					old_declarations[old_declarations.size()-1].append("\n" + line);
 					
-					//cout << "	extra line: `" << line << "`.\n";
+					//cout << "	extra line: `" << line << "`\n";
 
 					if (matches(line, R"(;)")) {
 						multi_line_dec = false;
@@ -475,8 +475,8 @@ void tools::update_namespace(
 				string m[3];
 				if (matches(m, line, R"(^.*\s(.*)\()")) {
 
-					//cout << "	found declaration: `" << line << "`.\n";
-					//cout << "		m[1]: `" << m[1] << "`.\n";
+					//cout << "	found declaration: `" << line << "`\n";
+					//cout << "		m[1]: `" << m[1] << "`\n";
 
 					// here have a chance to get a copy of the indent
 					//
@@ -505,23 +505,6 @@ void tools::update_namespace(
 				}
 			}
 
-
-			// replace placeholders in ns_block and write it to ofh
-			//
-			//else {
-
-			// remove preceding spaces from old_dec
-			
-			//for (int i = 0; i < old_declarations.size(); i++) {
-			//	string m[2];
-			//	string od = old_declarations[i];
-			//	if (matches(m, od, R"(^(\s+))"))
-			//		indent = m[1];
-
-			//	replace_first(od, R"(^\s+)", "");
-			//	old_declarations[i].assign(od);
-			//}
-
 			for (auto &od : old_declarations)
 				replace_all(od, R"(\n	)", "\n");
 
@@ -546,7 +529,9 @@ void tools::update_namespace(
 							sprintf(re, "^placeholder %d$", odi);
 							if (matches(ns_block[i], string(re))) {
 
-								ns_block[i] = indent + old_dec;
+								string s = indent + old_dec;
+								replace_all(s, R"(\n)", "\n" + indent);
+								ns_block[i] = s;
 								break;
 							}
 						}
@@ -580,11 +565,8 @@ void tools::update_namespace(
 				cout << item << endl;
 			cout << endl;
 
-
-
 			// prompt user about what to do for each item in the ony_in_old vector
 			// remove replaced declarations from the new_declarations vector
-			//
 			for (const auto od : only_in_old) {
 
 				string nice_od = od;
@@ -593,8 +575,9 @@ void tools::update_namespace(
 						R"(\n)",
 						"`\n		                    `");
 
-				cout << "	namespace has extra declaration:\n\n		                    `";
-				cout << nice_od << "`.\n\n	commands:\n\n";
+				cout << "	namespace has extra declaration:";
+				cout << "\n\n		                    `";
+				cout << nice_od << "`\n\n	commands:\n\n";
 				cout << "		l - leave it (default)\n";
 				cout << "		r - remove it\n";
 				for (int i = 0; i < only_in_new.size(); i++) {
@@ -635,7 +618,9 @@ void tools::update_namespace(
 
 					if (opt == "l" || opt == "") {
 						// use od and leave the file as is
-						ns_block[phi] = indent + od;
+						string s = indent + od;
+						replace_all(s, R"(\n)", "\n" + indent);
+						ns_block[phi] = s;
 						break;
 					}
 					else if (opt == "r") {
@@ -656,38 +641,17 @@ void tools::update_namespace(
 
 					cout << "	invalid option!";
 				}
-					
-
-				//cout << "	yeah: `" << atoi(opt.c_str()) << "`.\n";
 			}
 
-			cout << "	ns_block:\n\n";
-			for (const auto item : ns_block)
-				cout << item << endl;
-			cout << endl;
-
-
 			// add only_in_new to the ns_block
+			for (const auto item : only_in_new)
+				cout << "	item left in only_in_new: `" << item << "`\n";
 
-			// instead of collecting all of the old declarations compare each
-			// one against the new list individually, this way documentation
-			// and variable declarations are left in their original places.
-			// This way only replace the line of the function declarations
-			//	bool found = false;
-
-			//}
-
-			//cout << "	old_declarations:\n\n";
-			//for (const auto item : old_declarations)
-			//	cout << item << endl;
-			//cout << endl;
-
-			// now that we have old_declarations compare it to new_declarations
-			// and populate only_in_old and only_in_new
-
-			// form the new namespace definition and write it to ofh
-			
-		}
+			// write the new namespace definition to ofh
+			for (const auto item : ns_block)
+				ofh << item << endl;
+	
+		} // end of namespace block
 		else {
 			// copy the lines to the new file
 			ofh << line << endl;
@@ -735,12 +699,12 @@ bool tools::require(bool func_return_val, string msg) {
 }
 
 void tools::get_includes(vector<string>& includes, string fname) {
-	cout << "tools::get_includes: opening file `" << fname << "`.\n";
+	cout << "tools::get_includes: opening file `" << fname << "`\n";
 
 	ifstream ifh;
 	ifh.open(fname, ifstream::in);
 	if (!ifh.is_open()) {
-		cout << "tools::get_includes: couldn't open `" << fname << "`.\n";
+		cout << "tools::get_includes: couldn't open `" << fname << "`\n";
 		return;
 	}
 
@@ -750,13 +714,13 @@ void tools::get_includes(vector<string>& includes, string fname) {
 
 		string m[2];
 		if (matches(m, line, R"(^#include \"(.*)\")")) {
-			cout << "	matched line: `" << line << "`, m[1]: `" << m[1] << "`.\n";
+			cout << "	matched line: `" << line << "`, m[1]: `" << m[1] << "`\n";
 
 			// make sure there's no duplicates
 			bool dup = false;
 			for (const auto item : includes) {
 				if (item == m[1]) {
-					cout << "	already have `" << m[1] << "`.\n";
+					cout << "	already have `" << m[1] << "`\n";
 					dup = true;
 					break;
 				}
