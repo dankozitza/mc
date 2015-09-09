@@ -20,7 +20,7 @@ namespace tools {
 	void signals_callback_handler(int signum);
 	void signals(int sig, void (*callback_func)(int));
 	void add_documentation(string fname);
-	void get_func_defs(vector<string>& declarations, string fname);
+	void get_func_defs(vector<string>& definitions, string fname);
 	void form_scoped_declarations(
 			map<string, vector<string>> &sd,
 			vector<string> defs);
@@ -34,14 +34,14 @@ namespace tools {
 	bool matches(string results[], string s, string str_re);
 	bool matches(vector<string>& results, string s, string str_re);
 	//bool matches(map<string, string>& results, string s, string regex);
-	bool matches(smatch& sm, string s, string regex);
+	bool matches(smatch& sm, string s, string str_re);
 	bool replace_first(string &s, string str_re, string fmt);
 	bool replace_all(
 			string &s,
 			string str_re,
 			string fmt,
 			regex_constants::match_flag_type mf = regex_constants::match_default);
-	
+
 	void test_matches();
 	void test_replace();
 	void get_includes(vector<string>& includes, string fname);

@@ -267,7 +267,7 @@ void tools::add_documentation(string fname) {
 
 	cout << "tools::add_documentation: finished!\n	new file is `" << tfname;
 	cout << "`\n\n";
-	cout << "	overwrite existing file? (Y/n): ";
+	cout << "	overwrite existing file? [Y/n]: ";
 
 	getline(cin, answer);
 
@@ -395,9 +395,6 @@ void tools::update_namespace(
 	// prompt the user to decide on action
 	vector<string> only_in_old;
 
-	vector<string> in_both;
-
-
 	// temporary filename for making updated file
 	string tfname = fname + "_mc_updated_decs";
 	bool made_change = false;
@@ -422,7 +419,7 @@ void tools::update_namespace(
 	}
 
 	// destroy_targets function will remove this at exit
-	//Targets.push_back(tfname);
+	Targets.push_back(tfname);
 
 	// only want to call atexit once.
 	if (!CalledAtexit) {
@@ -632,7 +629,9 @@ void tools::update_namespace(
 							&& atoi(opt.c_str()) < only_in_new.size()
 							&& atoi(opt.c_str()) > -1) {
 						// replace it with only_in_new[opt]
-						ns_block[phi] = indent + only_in_new[atoi(opt.c_str())];
+						string s = indent + only_in_new[atoi(opt.c_str())];
+						replace_all(s, R"(\n)", "\n" + indent);
+						ns_block[phi] = s;
 
 						// remove the declaration from the only_in_new vector
 						only_in_new.erase(only_in_new.begin()+atoi(opt.c_str()));
@@ -643,9 +642,45 @@ void tools::update_namespace(
 				}
 			}
 
-			// add only_in_new to the ns_block
-			for (const auto item : only_in_new)
-				cout << "	item left in only_in_new: `" << item << "`\n";
+			// prompt the user about what to do with remaining only_in_new
+			while (only_in_new.size() > 0) {
+				cout << "	there are items left in the only_in_new vector:\n\n";
+				cout << "	commands:\n\n";
+				cout << "		i - ignore these items and leave them";
+				cout << " out of the namespace\n";
+				for (int i = 0; i < only_in_new.size(); i++) {
+					string nice_nd = only_in_new[i];
+					replace_all(nice_nd, R"(\n)", "`\n		        `");
+					cout << "		" << i << " - add `" << nice_nd;
+					cout << "` to the namespace\n";
+				}
+
+				while (true) {
+					cout << "\n	enter command: ";
+					string opt;
+					getline(cin, opt);
+
+					if (opt == "i") {
+						// remove the remaining only_in_new declarations
+						only_in_new.clear();
+						break;
+					}
+					else if (matches(opt, R"(^\d+$)")
+							&& atoi(opt.c_str()) < only_in_new.size()
+							&& atoi(opt.c_str()) > -1) {
+						// add only_in_new[opt] to ns_block
+						string s = indent + only_in_new[atoi(opt.c_str())];
+						replace_all(s, R"(\n)", "\n" + indent);
+						ns_block.push_back(s);
+
+						// remove the declaration from the only_in_new vector
+						only_in_new.erase(only_in_new.begin()+atoi(opt.c_str()));
+						break;
+					}
+
+					cout << "	invalid option!";
+				}
+			}
 
 			// write the new namespace definition to ofh
 			for (const auto item : ns_block)
@@ -661,7 +696,28 @@ void tools::update_namespace(
 	ofh.close();
 	ifh.close();
 
-	cout << "tools::update_namespaces: testing complete\n";
+	// TODO: handle situations where the declaration has default values defined
+	// TODO: handle case where no changes were made
+
+	string cmd_str = "diff " + fname + " " + tfname;
+	cout << "tools::update_namespaces: calling `" << cmd_str << "`:\n\n";
+	system(cmd_str.c_str());
+	cout << "\ntools::update_namespaces: finished!\n	new file is `" << tfname;
+	cout << "`\n\n";
+	cout << "	overwrite existing file? [Y/n]: ";
+
+	cmd_str = "y";
+	getline(cin, cmd_str);
+
+	if (cmd_str != "n") {
+		cout << "	removing `" << fname << "`\n";
+		remove(fname.c_str());
+		cout << "	renaming `" << tfname << "` to `" << fname << "`\n";
+		rename(tfname.c_str(), fname.c_str());
+	}
+	else {
+		cout << "	overwrite canceled!\n";
+	}
 }
 
 // require
