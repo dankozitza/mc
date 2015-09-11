@@ -621,6 +621,7 @@ void tools::update_namespace(
 						break;
 					}
 					else if (opt == "r") {
+						made_change = true;
 						// remove the placeholder line entirely
 						ns_block.erase(ns_block.begin()+phi);
 						break;
@@ -628,6 +629,7 @@ void tools::update_namespace(
 					else if (matches(opt, R"(^\d+$)")
 							&& atoi(opt.c_str()) < only_in_new.size()
 							&& atoi(opt.c_str()) > -1) {
+						made_change = true;
 						// replace it with only_in_new[opt]
 						string s = indent + only_in_new[atoi(opt.c_str())];
 						replace_all(s, R"(\n)", "\n" + indent);
@@ -668,6 +670,7 @@ void tools::update_namespace(
 					else if (matches(opt, R"(^\d+$)")
 							&& atoi(opt.c_str()) < only_in_new.size()
 							&& atoi(opt.c_str()) > -1) {
+						made_change = true;
 						// add only_in_new[opt] to ns_block
 						string s = indent + only_in_new[atoi(opt.c_str())];
 						replace_all(s, R"(\n)", "\n" + indent);
@@ -696,8 +699,12 @@ void tools::update_namespace(
 	ofh.close();
 	ifh.close();
 
+	if (!made_change) {
+		cout << "tools::update_namespace: no changes made!\n";
+		return;
+	}
+
 	// TODO: handle situations where the declaration has default values defined
-	// TODO: handle case where no changes were made
 
 	string cmd_str = "diff " + fname + " " + tfname;
 	cout << "tools::update_namespaces: calling `" << cmd_str << "`:\n\n";
