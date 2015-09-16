@@ -63,7 +63,7 @@ void run() {
 	string named_prog_call = "./";
 	named_prog_call += vfnconf["name"];
 	named_prog_call += Args;
-	cout << "mc: calling `" << named_prog_call << "`.\n";
+	cout << "mc: calling `" << named_prog_call << "`.\n\n";
 	require(system(named_prog_call.c_str()));
 }
 
