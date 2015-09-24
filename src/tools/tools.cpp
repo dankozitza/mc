@@ -324,8 +324,9 @@ void tools::get_func_defs(vector<string>& definitions, string fname) {
 			continue;
 		}
 
-		// TODO: make this work on multi-line definitions
-		if (matches(line, R"(^\w.*?\w+\(.*\)? *\{?)")) {
+		// try to match a function definition
+		if (matches(line, R"(^\w.*?\w+\(.*\)? *\{?)") ||
+					matches(line, R"(^\w.*?operator.*?\(.*\)? *\{?)")) {
 //			cout << "tools::get_func_defs: matched line: `" << line << "`\n";
 			definitions.push_back(line);
 
@@ -370,17 +371,17 @@ void tools::form_scoped_declarations(
 	}
 }
 
-// update_namespace
+// update_ns_or_class
 //
-//	updates the namespace `namespace_name` with the declarations found in the
+//	updates the namespace or class `ns_c_name` with the declarations found in the
 //	`new_declarations` vector in the file found at `fname`
 //
 //	   - reads fname retreiving an old list of declarations
 //    - compares the old list with the new list
 //    - 
 //
-void tools::update_namespace(
-		string namespace_name,
+void tools::update_ns_or_class(
+		string ns_c_name,
 		vector<string> new_declarations,
 		string fname) {
 
@@ -400,21 +401,21 @@ void tools::update_namespace(
 	bool made_change = false;
 	string indent = "	";
 
-	cout << "tools::update_namespaces: opening file `" << fname << "`\n";
+	cout << "tools::update_ns_or_class: opening file `" << fname << "`\n";
 
 	ifstream ifh;
 	ifh.open(fname, ifstream::in);
 	if (!ifh.is_open()) {
-		cout << "tools::update_namespaces: couldn't open `" << fname << "`\n";
+		cout << "tools::update_ns_or_class: couldn't open `" << fname << "`\n";
 		return;
 	}
 
-	cout << "tools::update_namespaces: opening file `" << tfname << "`\n";
+	cout << "tools::update_ns_or_class: opening file `" << tfname << "`\n";
 
 	ofstream ofh;
 	ofh.open(tfname, ofstream::out);
 	if (!ofh.is_open()) {
-		cout << "tools::update_namespaces: couldn't open `" << tfname << "`\n";
+		cout << "tools::update_ns_or_class: couldn't open `" << tfname << "`\n";
 		return;
 	}
 
@@ -431,14 +432,17 @@ void tools::update_namespace(
 		string line;
 		getline(ifh, line);
 
-		// create a regular expression to match the namespace definition
-		string ns_def_re = "^namespace " + namespace_name + "\\W";
+		// create a regular expression to match the namespace or class definition
+		string ns_c_def_re = "^(namespace|class) " + ns_c_name + "\\W";
+
+		// TODO: perhaps to remove the problem of scope i could have a loop here
+		// that attempts to match ns_c_def_re and on fail it enters other scopes.
 
 		// begining of namespace block
-		if (matches(line, ns_def_re)) {
+		if (matches(line, ns_c_def_re)) {
 
-			// this is a vector of the entire namespace. function declarations
-			// are replaced with a placeholder.
+			// this is a vector of the entire namespace or class. function
+			// declarations are replaced with a placeholder.
 			vector<string> ns_block;
 			ns_block.push_back(line);
 
@@ -455,13 +459,10 @@ void tools::update_namespace(
 
 				if (multi_line_dec) {
 					// get the remaining lines of the declaration
-					//
 					string new_line = line;
 					replace_all(new_line, R"(^	)", "");
 					old_declarations[old_declarations.size()-1].append("\n" + line);
 					
-					//cout << "	extra line: `" << line << "`\n";
-
 					if (matches(line, R"(;)")) {
 						multi_line_dec = false;
 					}
@@ -475,8 +476,6 @@ void tools::update_namespace(
 					//cout << "	found declaration: `" << line << "`\n";
 					//cout << "		m[1]: `" << m[1] << "`\n";
 
-					// here have a chance to get a copy of the indent
-					//
 					// get the indent and set 
 					string m2[4];
 					if (matches(m, line, R"(^(\s+)(.*)$)")) {
@@ -515,9 +514,9 @@ void tools::update_namespace(
 				for (const auto new_dec : new_declarations) {
 
 					if (old_dec == new_dec) {
-					cout << "\n	old_dec: `" << old_dec << "`\n	new_dec: `";
-					cout << new_dec << "`\n";
-						cout << "	^^^match!\n";
+						//cout << "\n	old_dec: `" << old_dec << "`\n	new_dec: `";
+						//cout << new_dec << "`\n";
+						//cout << "	^^^match!\n";
 						found = true;
 						// find the placeholder to replace since this declaration is
 						// in both new and old lists.
@@ -540,10 +539,10 @@ void tools::update_namespace(
 				}
 			}
 
-			cout << "	only_in_old:\n\n";
-			for (const auto item : only_in_old)
-				cout << item << endl;
-			cout << endl;
+//			cout << "	only_in_old:\n\n";
+//			for (const auto item : only_in_old)
+//				cout << item << endl;
+//			cout << endl;
 
 			// get the only_in_new list
 			for (const auto new_dec : new_declarations) {
@@ -557,10 +556,10 @@ void tools::update_namespace(
 				}
 			}
 
-			cout << "	only_in_new:\n\n";
-			for (const auto item : only_in_new)
-				cout << item << endl;
-			cout << endl;
+//			cout << "	only_in_new:\n\n";
+//			for (const auto item : only_in_new)
+//				cout << item << endl;
+//			cout << endl;
 
 			// prompt user about what to do for each item in the ony_in_old vector
 			// remove replaced declarations from the new_declarations vector
@@ -632,7 +631,7 @@ void tools::update_namespace(
 						made_change = true;
 						// replace it with only_in_new[opt]
 						string s = indent + only_in_new[atoi(opt.c_str())];
-						replace_all(s, R"(\n)", "\n" + indent);
+						replace_all(s, "\n", "\n" + indent);
 						ns_block[phi] = s;
 
 						// remove the declaration from the only_in_new vector
@@ -700,16 +699,16 @@ void tools::update_namespace(
 	ifh.close();
 
 	if (!made_change) {
-		cout << "tools::update_namespace: no changes made!\n";
+		cout << "tools::update_ns_or_class: no changes made!\n";
 		return;
 	}
 
 	// TODO: handle situations where the declaration has default values defined
 
 	string cmd_str = "diff " + fname + " " + tfname;
-	cout << "tools::update_namespaces: calling `" << cmd_str << "`:\n\n";
+	cout << "tools::update_ns_or_class: calling `" << cmd_str << "`:\n\n";
 	system(cmd_str.c_str());
-	cout << "\ntools::update_namespaces: finished!\n	new file is `" << tfname;
+	cout << "\ntools::update_ns_or_class: finished!\n	new file is `" << tfname;
 	cout << "`\n\n";
 	cout << "	overwrite existing file? [Y/n]: ";
 

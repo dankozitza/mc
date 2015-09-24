@@ -24,8 +24,8 @@ namespace tools {
 	void form_scoped_declarations(
 			map<string, vector<string>> &sd,
 			vector<string> defs);
-	void update_namespace(
-			string namespace_name,
+	void update_ns_or_class(
+			string ns_c_name,
 			vector<string> new_declarations,
 			string fname);
 	bool require(int sys_exit_val, string msg = "");
