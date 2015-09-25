@@ -351,7 +351,7 @@ void tools::form_scoped_declarations(
 		string m[4];
 
 		string nl = line;
-		replace_all(nl, R"(\n)", "TEMP_NEWLINE_REPLACEMENT2534324567");
+		replace_all(nl, "\n", "TEMP_NEWLINE_REPLACEMENT2534324567");
 	
 		// remove everything after the last parenthesis
 		replace_first(nl, R"([^)]+$)", "");
