@@ -66,8 +66,8 @@ void commands::handle(
 		string usage,
 		string description) {
 	
-		Command tmp = {dummy_func, func, true, synopsis, usage, description};
-		cmds[cmd]   = tmp;
+	Command tmp = {dummy_func, func, true, synopsis, usage, description};
+	cmds[cmd]   = tmp;
 }
 
 void commands::handle(
