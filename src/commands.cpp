@@ -58,6 +58,9 @@ void commands::set_cmds_help(string msg) {
 //    cmds.handle("cmd_name", function_name, "synopsis", "usage");
 //    cmds.run("help", Argv);
 //
+// If the argv vector has arguments in it the usage, synopsis, and description
+// is printed for each command named in the arguments.
+//
 // TODO: fold lines at this->line_width when printing to cout
 //
 void commands::default_help(vector<string>& argv) {
