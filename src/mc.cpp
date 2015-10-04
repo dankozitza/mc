@@ -10,6 +10,7 @@
 #include <cstdlib>
 #include <string.h>
 #include <csignal>
+#include "commands.hpp"
 #include "tools.hpp"
 
 using namespace tools;
@@ -31,121 +32,85 @@ int main(int argc, char *argv[]) {
 
 	signal(SIGINT, signals_callback_handler);
 
-	//commands cmds;
-	//cmds.handle(
-	//		"help",
-	//		help_message,
-	//		"displays this message",
-	//		"USAGE: mc help [command]");
-//},
-	//	{"makefile", makefile},
-	//	{"build", build},
-	//	{"rebuild", rebuild},
-	//	{"run", run},
-	//	{"doc", doc},
-	//	{"dec", dec},
-	//	{"env", env}};
+	commands cmds;
+	cmds.set_cmds_help(
+		"\nmc is a tool for managing c++ source code.\n\n"
+		"Usage:\n\n   mc command [arguments]\n");
 
-	if (argc < 2)
-		return help_message();
+	cmds.handle(
+			"makefile",
+			makefile,
+			"Creates a make file by calling vfnmake <arguments>.",
+			"Usage: mc makefile [arguments]");
+	cmds.handle(
+			"build",
+			build,
+			"Calls vfnmake <arguments> then make.",
+			"Usage: mc build [arguments]");
+	cmds.handle(
+			"rebuild",
+			rebuild,
+			"Calls make clean, vfnmake <arguments>, then make.",
+			"Usage: mc rebuild [arguments]",
+			"This will remove blarg blah and booooooosdofsodfosodfosodfoooooo long lots of workds blarg ksdfosd dfsidjf dfj sodfijsdl sdjfos fisjfs dfjs idfsjdfsndfoisndf sf sdjfids fisjfosdf sdf djf sidfjosidfj sd  djfsoid fosijf sdf j");
+	cmds.handle(
+			"run",
+			run,
+			"Calls vfnmake, make, then ./program <arguments>.",
+			"Usage: mc run [arguments]");
+	cmds.handle(
+			"doc",
+			doc,
+			"Parses c++ files adding documentation and "
+			"prompting the user for function descriptions.",
+			"Usage: mc doc CPP_FILE");
+	cmds.handle(
+			"dec",
+			dec,
+			"Ensures that all the functions listed in the given c++ "
+			"source files are declared properly.",
+			"Usage: mc dec CPP_FILE");
+	cmds.handle(
+			"env",
+			env,
+			"Displays the variables read from vfnmake.conf.",
+			"Usage: mc env");
+
+	if (argc < 2) {
+		cmds.run("help", Argv);
+		return 0;
+	}
 
 	for (int i = 2; i < argc; i++) {
 		Argv.push_back(string(argv[i]));
 		Args.append(string(" ").append(argv[i]));
 	}
 
-	// make map of ints and use switch instead of if-else
-	map<string, const int> commands = {
-		{"help", 0},
-		{"makefile", 1},
-		{"build", 2},
-		{"rebuild", 3},
-		{"run", 4},
-		{"doc", 5},
-		{"dec", 6},
-		{"env", 7}};
-
-	switch (commands[string(argv[1])]) {
-	case 0: help_message();
-		break;
-	case 1: VfnmakeSystemCall += Args; makefile();
-		break;
-	case 2: build();
-		break;
-	case 3: rebuild();
-		break;
-	case 4: run();
-		break;
-	case 5: doc();
-		break;
-	case 6: dec();
-		break;
-	case 7: env();
-		break;
-	default:
-		// didn't recognize command!
-		for (int i = 1; i < argc; i++) {
-			cout << "mc: unrecognized command: `" << argv[i] << "`.\n";
-		}
-		return help_message();
-	}
-
-//	if (!strcmp(argv[1], "help")) {
-//		help_message();
-//	}
-//	else if (!strcmp(argv[1], "makefile")) {
-//		VfnmakeSystemCall += Args;
-//		makefile();
-//	}
-//	else if (!strcmp(argv[1], "build")) {
-//		build();
-//	}
-//	else if (!strcmp(argv[1], "rebuild")) {
-//		rebuild();
-//	}
-//	else if (!strcmp(argv[1], "run")) {
-//		run();
-//	}
-//	else if (!strcmp(argv[1], "doc")) {
-//		doc();
-//	}
-//	else if (!strcmp(argv[1], "dec")) {
-//		dec();
-//	}
-//	else if (!strcmp(argv[1], "env")) {
-//		env();
-//	}
-//	else {
-//		// didn't recognize command!
-//		for (int i = 1; i < argc; i++) {
-//			cout << "mc: unrecognized command: `" << argv[i] << "`.\n";
-//		}
-//		return help_message();
-//	}
+	cmds.run(string(argv[1]), Argv);
 
 	return 0;
 }
 
-int help_message() {
-	cout << "\nmc is a tool for managing c++ source code.\n\n";
-	cout << "Usage:\n\n   mc command [arguments]\n\n";
-	cout << "Commands:\n\n";
-	cout << "   help     - Show this help message\n";
-	cout << "   makefile - Creates a make file by calling vfnmake <arguments>\n";
-	cout << "   build    - Calls vfnmake <arguments> then make\n";
-	cout << "   rebuild  - Calls make clean, vfnmake <arguments>, then make\n";
-	cout << "   run      - Calls vfnmake, make, then ./program <arguments>\n";
-	cout << "   doc      - Parses .cpp files adding documentation and\n";
-	cout << "              prompting the user for function descriptions\n";
-// TODO:
-//cout << "   mkreadme - Make a README.md file from ./program <arguments>.\n";
-//cout << "              arguments is `help` by default.\n";
-	cout << "   dec      - Ensures that all the functions listed in the given\n";
-	cout << "              source files are declared properly.\n";
-	cout << "   env      - Displays the variables read from vfnmake.conf\n";
-	cout << "\n";
-	return EXIT_FAILURE;
-}
+//int help_message() {
+//	cout << "\nmc is a tool for managing c++ source code.\n\n";
+//	cout << "Usage:\n\n   mc command [arguments]\n\n";
+//	cout << "Commands:\n\n";
+//	cout << "   help     - Show this help message\n";
+//	cout << "   makefile - Creates a make file by calling vfnmake <arguments>\n";
+//	cout << "   build    - Calls vfnmake <arguments> then make\n";
+//	cout << "   rebuild  - Calls make clean, vfnmake <arguments>, then make\n";
+//	cout << "   run      - Calls vfnmake, make, then ./program <arguments>\n";
+//	cout << "   doc      - Parses .cpp files adding documentation and\n";
+//	cout << "              prompting the user for function descriptions\n";
+//// TODO:
+////cout << "   mkreadme - Make a README.md file from ./program <arguments>.\n";
+////cout << "              arguments is `help` by default.\n";
+//	cout << "   dec      - Ensures that all the functions listed in the given\n";
+//	cout << "              source files are declared properly.\n";
+//	cout << "   env      - Displays the variables read from vfnmake.conf\n";
+//	cout << "\n";
+//	return EXIT_FAILURE;
+//}
 
 void makefile() {
 	cout << "mc: calling `" << VfnmakeSystemCall << "`.\n";

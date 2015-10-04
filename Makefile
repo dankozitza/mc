@@ -1,19 +1,24 @@
+# 2d38f7834567dc0341e0296a9cf1e2e8
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
 LFLAGS=
-OBJS=objs/mc.o objs/matches.o objs/tools.o
+OBJS=objs/mc.o objs/commands.o objs/matches.o objs/tools.o
+
 
 .PHONY: all
 all: objs mc
 
-./mc: deps/vfnmake/installed $(OBJS)
+./mc: $(OBJS)
 	@ echo "    LINK ./mc"
 	@ $(CXX) $(OBJS) -o "./mc" $(LFLAGS)
 
-objs/mc.o: src/mc.cpp src/tools.hpp
+objs/mc.o: src/mc.cpp src/commands.hpp src/tools.hpp
 	@ echo "    CXX  src/mc.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/mc.cpp" -o $@
+objs/commands.o: src/commands.cpp src/commands.hpp
+	@ echo "    CXX  src/commands.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/commands.cpp" -o $@
 objs/matches.o: src/tools/matches.cpp src/tools/../tools.hpp
 	@ echo "    CXX  src/tools/matches.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/tools/matches.cpp" -o $@
@@ -23,6 +28,7 @@ objs/tools.o: src/tools/tools.cpp src/tools/../tools.hpp
 
 objs:
 	@ mkdir "objs"
+
 .PHONY: c clean
 c: clean
 clean:
@@ -44,22 +50,6 @@ debug: CFLAGS += -DDEBUG -g3 -Wall -Wextra
 debug: O=0
 debug: all
 
-.PHONY: check-syntax
-check-syntax:
-	$(CXX) $(CFLAGS) -fsyntax-only -Wall -o /dev/null -S src/*
-
-deps:
-	@ mkdir deps
- 
-deps/vfnmake: deps
-	@ echo "    GET deps/vfnmake"
-	@ cd deps; git clone https://github.com/dankozitza/vfnmake
- 
-deps/vfnmake/installed: deps/vfnmake
-	@ echo "    MAKE INSTALL deps/vfnmake"
-	@ cd deps/vfnmake; make install
-	@ touch deps/vfnmake/installed
-
 .PHONY: sc superclean
 sc: superclean
 superclean: clean
@@ -74,6 +64,9 @@ install: all
 
 .PHONY: uninstall
 uninstall:
-	@ cd deps/vfnmake; make clean; make uninstall
 	@ rm $(PREFIX)/bin/mc
 	@ echo "[1;32m*[0m mc removed from $(PREFIX)/bin[0m"
+
+.PHONY: check-syntax
+check-syntax:
+	$(CXX) $(CFLAGS) -fsyntax-only -Wall -o /dev/null -S src/*
