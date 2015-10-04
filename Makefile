@@ -1,4 +1,4 @@
-# 2d38f7834567dc0341e0296a9cf1e2e8
+# 60ffd7daff953f818706c184c0b655b1
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
@@ -9,7 +9,7 @@ OBJS=objs/mc.o objs/commands.o objs/matches.o objs/tools.o
 .PHONY: all
 all: objs mc
 
-./mc: $(OBJS)
+./mc: deps/vfnmake/installed  $(OBJS)
 	@ echo "    LINK ./mc"
 	@ $(CXX) $(OBJS) -o "./mc" $(LFLAGS)
 
@@ -64,8 +64,21 @@ install: all
 
 .PHONY: uninstall
 uninstall:
+	@ cd deps/vfnmake; make clean; make uninstall;
 	@ rm $(PREFIX)/bin/mc
 	@ echo "[1;32m*[0m mc removed from $(PREFIX)/bin[0m"
+
+deps:
+	@ mkdir deps
+
+deps/vfnmake: deps
+	@ echo "    GET deps/vfnmake"
+	@ cd deps; git clone https://github.com/dankozitza/vfnmake
+
+deps/vfnmake/installed: deps/vfnmake
+	@ echo "    MAKE INSTALL deps/vfnmake"
+	@ cd deps/vfnmake; make install
+	@ touch deps/vfnmake/installed
 
 .PHONY: check-syntax
 check-syntax:
