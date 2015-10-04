@@ -23,8 +23,7 @@ commands::commands() {
 // 
 // If set two things will happen:
 //
-//    1. A message explaining how to use the help command will be printed after
-//       the list of available commands.
+//    1. the program name will be used in the main help output.
 //
 //    2. The program name will be prepended to usage strings.
 //
@@ -76,12 +75,11 @@ void commands::default_help(vector<string>& argv) {
 				cout << "   " << left << setw(cmd_name_width) << c.first;
 				cout << " - " << c.second.synopsis << endl;
 			}
-			cout << endl;
 
-			if (program_name != "") {
-				cout << "Use \"" << program_name << " help [command]\" for more ";
-				cout << "information about a command.\n\n";
-			}
+			cout << "\nUse \"";
+			if (program_name != "")
+				cout << program_name << " ";
+			cout << "help [command]\" for more information about a command.\n\n";
 		}
 	}
 	else {
@@ -95,6 +93,7 @@ void commands::default_help(vector<string>& argv) {
 				cout << cmds[argv[i]].synopsis << endl;
 				if (cmds[argv[i]].description != "")
 					cout << endl << cmds[argv[i]].description << endl;
+				cout << endl;
 			}
 			else {
 				// if the user calls help help

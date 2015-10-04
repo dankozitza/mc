@@ -52,8 +52,7 @@ int main(int argc, char *argv[]) {
 			"rebuild",
 			rebuild,
 			"Calls make clean, vfnmake <arguments>, then make.",
-			"rebuild [arguments]",
-			"This will remove blarg blah and booooooosdofsodfosodfosodfoooooo long lots of workds blarg ksdfosd dfsidjf dfj sodfijsdl sdjfos fisjfs dfjs idfsjdfsndfoisndf sf sdjfids fisjfosdf sdf djf sidfjosidfj sd  djfsoid fosijf sdf j");
+			"rebuild [arguments]");
 	cmds.handle(
 			"run",
 			run,
