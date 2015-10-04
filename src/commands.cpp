@@ -16,31 +16,78 @@ commands::commands() {
 	cmd_name_width = 20;
 }
 
+// set_program_name
+// 
+// When this is set the commands object will act as if the command being
+// run is from the command line arguments of a program named `pn`.
+// 
+// If set two things will happen:
+//
+//    1. A message explaining how to use the help command will be printed after
+//       the list of available commands.
+//
+//    2. The program name will be prepended to usage strings.
+//
+void commands::set_program_name(string pn) {
+	program_name = pn;
+}
+
+// set_cmds_help
+// 
+// This message is printed when run("help", Argv) is called. Before the list
+// of available commands.
+//
 void commands::set_cmds_help(string msg) {
 	cmds_help = msg;
 }
 
+// default_help
+//
+// This function is automatically called when the "help" command is run. If
+// argv is empty it will print the help message for the entire commands object,
+// `cmds_help`. This message is expected to explain what the situation is that
+// requires user input and should include it's own usage. After the help message
+// is printed a list of the available commands is printed.
+//
+// Ex:
+//
+//    commands cmds;
+//    cmds.set_cmds_help(
+//       "program_name is designed to ...\n"
+//       "Usage: program_name command [arguments]\n");
+//    cmds.handle("cmd_name", function_name, "synopsis", "usage");
+//    cmds.run("help", Argv);
+//
 // TODO: fold lines at this->line_width when printing to cout
+//
 void commands::default_help(vector<string>& argv) {
 	if (argv.size() == 0) {
 
 		if (cmds_help != "")
 			cout << cmds_help << endl;
 
+		// print the list of available commands
 		if (cmds.size() > 0) {
 			cout << "Commands:\n\n";
-			cout << "   " << left << setw(cmd_name_width) << "help";
-			cout << " - Show this help message. You can also use help [command] to get more information on another command.\n";
 			for (const auto c : cmds) {
 				cout << "   " << left << setw(cmd_name_width) << c.first;
 				cout << " - " << c.second.synopsis << endl;
 			}
 			cout << endl;
+
+			if (program_name != "") {
+				cout << "Use \"" << program_name << " help [command]\" for more ";
+				cout << "information about a command.\n\n";
+			}
 		}
 	}
 	else {
+		// print the usage, synopsis, and description of each argument
 		for (int i = 0; i < argv.size(); i++) {
 			if (cmds.find(argv[i]) != cmds.end()) {
+				cout << "Usage: ";
+				if (program_name != "")
+					cout << program_name << " ";
 				cout << cmds[argv[i]].usage << "\n\n";
 				cout << cmds[argv[i]].synopsis << endl;
 				if (cmds[argv[i]].description != "")
@@ -52,8 +99,12 @@ void commands::default_help(vector<string>& argv) {
 					vector<string> tmp;
 					default_help(tmp);
 				}
-				else
-					cout << "unknown command `" << argv[i] << "`\n";
+				else {
+					cout << "Unknown command `" << argv[i] << "`. Try '";
+					if (program_name != "")
+						cout << program_name << " "; 
+					cout << "help'.\n";
+				}
 			}
 		}
 	}

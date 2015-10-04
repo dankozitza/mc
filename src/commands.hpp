@@ -27,10 +27,12 @@ class commands {
 
 		map<string, Command> cmds;
 		string               cmds_help;
+		string               program_name;
 		int                  cmd_name_width;
 
 	public:
 		commands();
+		void set_program_name(string pn);
 		void set_cmds_help(string msg);
 		void handle(
 				string cmd,

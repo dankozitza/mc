@@ -33,6 +33,7 @@ int main(int argc, char *argv[]) {
 	signal(SIGINT, signals_callback_handler);
 
 	commands cmds;
+	cmds.set_program_name(string(argv[0]));
 	cmds.set_cmds_help(
 		"\nmc is a tool for managing c++ source code.\n\n"
 		"Usage:\n\n   mc command [arguments]\n");
@@ -41,40 +42,40 @@ int main(int argc, char *argv[]) {
 			"makefile",
 			makefile,
 			"Creates a make file by calling vfnmake <arguments>.",
-			"Usage: mc makefile [arguments]");
+			"makefile [arguments]");
 	cmds.handle(
 			"build",
 			build,
 			"Calls vfnmake <arguments> then make.",
-			"Usage: mc build [arguments]");
+			"build [arguments]");
 	cmds.handle(
 			"rebuild",
 			rebuild,
 			"Calls make clean, vfnmake <arguments>, then make.",
-			"Usage: mc rebuild [arguments]",
+			"rebuild [arguments]",
 			"This will remove blarg blah and booooooosdofsodfosodfosodfoooooo long lots of workds blarg ksdfosd dfsidjf dfj sodfijsdl sdjfos fisjfs dfjs idfsjdfsndfoisndf sf sdjfids fisjfosdf sdf djf sidfjosidfj sd  djfsoid fosijf sdf j");
 	cmds.handle(
 			"run",
 			run,
 			"Calls vfnmake, make, then ./program <arguments>.",
-			"Usage: mc run [arguments]");
+			"run [arguments]");
 	cmds.handle(
 			"doc",
 			doc,
 			"Parses c++ files adding documentation and "
 			"prompting the user for function descriptions.",
-			"Usage: mc doc CPP_FILE");
+			"doc CPP_FILE");
 	cmds.handle(
 			"dec",
 			dec,
 			"Ensures that all the functions listed in the given c++ "
 			"source files are declared properly.",
-			"Usage: mc dec CPP_FILE");
+			"dec CPP_FILE");
 	cmds.handle(
 			"env",
 			env,
 			"Displays the variables read from vfnmake.conf.",
-			"Usage: mc env");
+			"env");
 
 	if (argc < 2) {
 		cmds.run("help", Argv);
