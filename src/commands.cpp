@@ -8,12 +8,13 @@
 #include <iostream>
 #include <iomanip>
 #include "commands.hpp"
+#include "tools.hpp"
 
 void dummy_func() {};
 void dummy_func(vector<string>& j) {};
 
 commands::commands() {
-	cmd_name_width = 20;
+	cmd_name_width = 15;
 }
 
 // set_program_name
@@ -73,7 +74,10 @@ void commands::default_help(vector<string>& argv) {
 			cout << "Commands:\n\n";
 			for (const auto c : cmds) {
 				cout << "   " << left << setw(cmd_name_width) << c.first;
-				cout << " - " << c.second.synopsis << endl;
+				cout << " - " << tools::fold(
+					cmd_name_width + 6,
+					80,
+					c.second.synopsis) << endl;
 			}
 
 			cout << "\nUse \"";

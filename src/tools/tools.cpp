@@ -673,6 +673,8 @@ void tools::update_ns_or_class(
 						// add only_in_new[opt] to ns_block
 						string s = indent + only_in_new[atoi(opt.c_str())];
 						replace_all(s, R"(\n)", "\n" + indent);
+
+						// TODO: this needs to insert s before the last item
 						ns_block.push_back(s);
 
 						// remove the declaration from the only_in_new vector
@@ -794,4 +796,40 @@ void tools::get_includes(vector<string>& includes, string fname) {
 	}
 
 	ifh.close();
+}
+
+// fold
+//
+// a function that takes an indent width, a max line width, and a string. The
+// string is broken at max line width with a newline and the next line is
+// indented with indent width spaces. The first line is expected to be indented
+// outside of this function so the first line broken will be broken at
+// max_line_width - indent_width.
+//
+// TODO: have -s type deal so that words don't get cut in half
+//
+string tools::fold(int indent_width, int max_line_width, string s) {
+	string indent;
+	for (int i = 0; i < indent_width; ++i)
+		indent += ' ';
+
+	// loop through each character in s
+	int char_cnt = indent_width;
+	string new_s;
+	for (int i = 0; i < s.size(); ++i) {
+		if (s[i] == '\n') {
+			new_s += '\n';
+			char_cnt = 0;
+			continue;
+		}
+		else {
+			if (char_cnt == max_line_width) {
+				new_s += "\n" + indent;
+				char_cnt = 0;
+			}
+			new_s += s[i];
+		}
+		char_cnt++;
+	}
+	return new_s;
 }

@@ -15,7 +15,6 @@
 using namespace std;
 
 namespace tools {
-	void only_in_header();
 	bool get_vfnmake_conf(unordered_map<string, string>& config);
 	void signals_callback_handler(int signum);
 	void signals(int sig, void (*callback_func)(int));
@@ -46,6 +45,7 @@ namespace tools {
 	void test_replace();
 	void get_includes(vector<string>& includes, string fname);
 	bool find_in_file(string str_re, string fname);
+	string fold(int indent_width, int max_line_width, string s);
 }
 
 #endif
