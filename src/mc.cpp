@@ -13,20 +13,17 @@
 
 using namespace tools;
 
-string         Args;
-vector<string> Argv;
-string         VfnmakeSystemCall = "vfnmake";
-
-void makefile();
-void build();
-void rebuild();
-void run();
-void doc();
-void dec();
+void build(vector<string>& argv);
+void dec(vector<string>& argv);
+void doc(vector<string>& argv);
 void env();
+void makefile(vector<string>& argv);
 void mkreadme();
+void rebuild(vector<string>& argv);
+void run(vector<string>& argv);
 
 int main(int argc, char *argv[]) {
+	vector<string> Argv;
 
 	signal(SIGINT, signals_callback_handler);
 
@@ -88,46 +85,53 @@ int main(int argc, char *argv[]) {
 		return 0;
 	}
 
-	for (int i = 2; i < argc; i++) {
+	for (int i = 2; i < argc; i++)
 		Argv.push_back(string(argv[i]));
-		Args.append(string(" ").append(argv[i]));
-	}
 
 	cmds.run(string(argv[1]), Argv);
 
 	return 0;
 }
 
-void makefile() {
-	cout << "mc: calling `" << VfnmakeSystemCall << "`.\n";
-	require(system(VfnmakeSystemCall.c_str()));
+void makefile(vector<string>& argv) {
+	string sys_call = "vfnmake";
+	for (int i = 0; i < argv.size(); i++)
+		sys_call += " " + argv[i];
+
+	cout << "mc: calling `" << sys_call << "`.\n";
+	require(system(sys_call.c_str()));
 }
 
-void build() {
-	makefile();
+void build(vector<string>& argv) {
+	makefile(argv);
 	require(system("make"));
 }
 
-void rebuild() {
+void rebuild(vector<string>& argv) {
 	require(system("make clean"));
-	build();
+	build(argv);
 }
 
-void run() {
-	build();
+void run(vector<string>& argv) {
+	string args;
+	for (int i = 0; i < argv.size(); i++)
+		args += " " + argv[i];
+
+	vector<string> junk;
+	build(junk);
 
 	map<string, string> vfnconf;
 	require(get_vfnmake_conf(vfnconf));
 
 	string named_prog_call = "./";
 	named_prog_call += vfnconf["name"];
-	named_prog_call += Args;
+	named_prog_call += args;
 	cout << "mc: calling `" << named_prog_call << "`.\n\n";
 	system(named_prog_call.c_str());
 }
 
-void doc() {
-	vector<string> fnames = Argv;
+void doc(vector<string>& argv) {
+	vector<string> fnames = argv;
 
 	if (fnames.size() == 0) {
 		// get .cpp file names by recursing through vfnconf["src_directory"]
@@ -138,13 +142,11 @@ void doc() {
 		if (fnames.size() > 1)
 			cout << "mc: file " << fn_i+1 << " of " << fnames.size() << ".\n";
 		add_documentation(fnames[fn_i]);
-		//for (const auto file_name : Argv)
-		//	cout << file_name << "\n";// " << item.second << endl;
 	}
 }
 
-void dec() {
-	vector<string> fnames = Argv;
+void dec(vector<string>& argv) {
+	vector<string> fnames = argv;
 
 	if (fnames.size() == 0) {
 		cout << "mc: automatic source file detection is under construction.\n";
