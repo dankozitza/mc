@@ -130,7 +130,7 @@ void rebuild() {
 void run() {
 	build();
 
-	unordered_map<string, string> vfnconf;
+	map<string, string> vfnconf;
 	require(get_vfnmake_conf(vfnconf));
 
 	string named_prog_call = "./";
@@ -253,7 +253,7 @@ void dec() {
 }
 
 void env() {
-	unordered_map<string, string> vfnconf;
+	map<string, string> vfnconf;
 	require(get_vfnmake_conf(vfnconf));
 
 	cout << "\nvfnmake.conf:\n\n";

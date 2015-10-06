@@ -8,14 +8,15 @@
 #ifndef _TOOLS
 #define _TOOLS
 
+#include <iostream>
 #include <map>
-#include <unordered_map>
 #include <regex>
+#include <vector>
 
 using namespace std;
 
 namespace tools {
-	bool get_vfnmake_conf(unordered_map<string, string>& config);
+	bool get_vfnmake_conf(map<string, string>& config);
 	void signals_callback_handler(int signum);
 	void signals(int sig, void (*callback_func)(int));
 	void add_documentation(string fname);

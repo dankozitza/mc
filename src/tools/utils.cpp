@@ -1,20 +1,19 @@
 //
-// tools.cpp
+// utils.cpp
+//
 // utility functions for mc
 //
 // Created by Daniel Kozitza
 //
 
 #include "../tools.hpp"
-#include <iostream>
 #include <fstream>
-#include <csignal>
 
 // get_vfnmake_conf
 //
 // Reads vnfmake.conf variables into 'config'.
 //
-bool tools::get_vfnmake_conf(unordered_map<string, string>& config) {
+bool tools::get_vfnmake_conf(map<string, string>& config) {
 
 	ifstream fh;
 	fh.open("vfnmake.conf", ifstream::in);
@@ -35,56 +34,6 @@ bool tools::get_vfnmake_conf(unordered_map<string, string>& config) {
 	return true;
 }
 
-// 
-// SIGABRT: 6
-// SIGFPE: 8
-// SIGILL: 4
-// SIGINT: 2
-// SIGSEGV: 11
-// SIGTERM: 15
-//
-vector<void (*)(int)> SigHandlers[16];
-
-// signals_callback_handler
-//
-// the signal handler for all signal handlers. runs all the signal handlers in 
-// the SigHandlers vector associated with that signal. use the signals function
-// to add handlers to the SigHandlers array of vectors.
-//
-// function to be called when ctrl-c (SIGINT) signal is sent to process
-//
-void tools::signals_callback_handler(int signum) {
-
-	cout << "\ntools::signals_callback_handler: caught signal `";
-	cout << signum << "`\n";
-
-	if (signum < 0 || signum > 15) {
-		cout << "	signal number out of bounds!!!\n";
-		exit(signum);
-	}
-
-	// run all other handlers
-	// this doesn't work if the handler exits
-	for (const auto handler : SigHandlers[signum])
-		handler(signum);
-
-	// Terminate program
-	exit(signum);
-}
-
-// signals
-//
-// replacement for signal that allows multiple callback handlers to be used for
-// each signal. If a callback handler supplied to signals calls `exit`, all
-// uncalled handlers in the SigHandlers vector will not be called.
-// 
-// signal(SIGINT, signals_callback_handler) must be called for program to exit
-// on interrupt.
-//
-void tools::signals(int sig, void (*callback_func)(int)) {
-	SigHandlers[sig].push_back(callback_func);
-}
-
 vector<string> Targets;
 
 void destroy_targets() {
@@ -93,37 +42,6 @@ void destroy_targets() {
 		remove(fname.c_str());
 	}
 }
-
-class suicide_bomber {
-	string file_name;
-
-	public:
-		suicide_bomber(string fname) {
-			cout << "tools::suicide_bomber: I WILL REMOVE `" << fname << "`!!!\n";
-			file_name = fname;
-
-			// for the destroy_targets signal handler
-			Targets.push_back(fname);
-
-
-			//signals(SIGINT, destroy_targets);
-			atexit(destroy_targets);
-		}
-		void dud() {
-			file_name = "";
-		}
-		void boom() {
-			 if (file_name != "") {
-				// boom only happens when the program exits nicely
-				cout << "tools::suicide_bomber: DIE YOU GODLESS HEATHEN!!!!\n";
-				remove(file_name.c_str());
-				cout << "	removed `" <<  file_name << "`\n";
-			}
-		}
-		~suicide_bomber() {
-			boom();
-		}
-};
 
 bool CalledAtexit = false;
 
@@ -728,40 +646,6 @@ void tools::update_ns_or_class(
 	}
 }
 
-// require
-//
-// overloaded function for exiting on failure with optional message.
-// TODO: have this throw an exception instead.
-//
-// exit if sys_exit_val is not zero.
-//
-bool tools::require(int sys_exit_val, string msg)
-{
-	if (sys_exit_val != 0) {
-		if (msg != "") {
-			cout << msg << "\n";
-		}
-		cout << "tools::require: got exit value `" << sys_exit_val << "`, ";
-		cout << "exiting.\n";
-		exit(EXIT_FAILURE);
-	}
-}
-
-// require
-//
-// exit if func_return_val is false
-//
-bool tools::require(bool func_return_val, string msg) {
-	if (func_return_val == false) {
-		if (msg != "") {
-			cout << msg << "\n";
-		}
-		cout << "tools::require: got return value `false`, ";
-      cout << "exiting.\n";
-		exit(EXIT_FAILURE);
-	}
-}
-
 void tools::get_includes(vector<string>& includes, string fname) {
 	cout << "tools::get_includes: opening file `" << fname << "`\n";
 
@@ -796,70 +680,4 @@ void tools::get_includes(vector<string>& includes, string fname) {
 	}
 
 	ifh.close();
-}
-
-// fold
-//
-// a function that takes an indent width, a max line width, and a string. The
-// string is broken at max line width with a newline and the next line is
-// indented with indent_width spaces. The first line is expected to be indented
-// outside of this function so the first line broken will be broken at
-// max_line_width - indent_width.
-//
-string tools::fold(int indent_width, int max_line_width, string s) {
-	string indent;
-	string word;
-	for (int i = 0; i < indent_width; ++i)
-		indent += ' ';
-
-	// loop through each character in s
-	int char_cnt = indent_width;
-	string new_s;
-	for (int i = 0; i < s.size(); ++i) {
-		if (s[i] == '\n') {
-			new_s += '\n' + indent + word + " ";
-			char_cnt = indent_width + word.size() + 1;
-			word = "";
-		}
-		else {
-
-			if (s[i] != ' ') {
-				// if s[i] is not a space add it to the current word
-				word.push_back(s[i]);
-			}
-			else if (word.size() + char_cnt > max_line_width) {
-
-				new_s += "\n" + indent;
-
-				// add the word to the new line
-				char_cnt = indent_width + word.size();
-				new_s += word;
-				word = "";
-
-				// append a space if there is room
-				if (char_cnt + 1 < max_line_width) {
-					new_s += ' ';
-					char_cnt++;
-				}
-			}
-			else {
-				// add the word to the current line
-				char_cnt += word.size();
-				new_s += word;
-				word = "";
-				// append a space if there is room
-				if (char_cnt + 1 < max_line_width) {
-					new_s += ' ';
-					char_cnt++;
-				}
-			}
-		}
-	}
-
-	// add the last word
-	if (word.size() + char_cnt >= max_line_width)
-		new_s += "\n" + indent;
-	new_s += word;
-
-	return new_s;
 }
