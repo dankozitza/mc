@@ -1,3 +1,4 @@
+# mc
 
 mc is a tool for managing c++ source code.
 
