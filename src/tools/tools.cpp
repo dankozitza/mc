@@ -802,14 +802,13 @@ void tools::get_includes(vector<string>& includes, string fname) {
 //
 // a function that takes an indent width, a max line width, and a string. The
 // string is broken at max line width with a newline and the next line is
-// indented with indent width spaces. The first line is expected to be indented
+// indented with indent_width spaces. The first line is expected to be indented
 // outside of this function so the first line broken will be broken at
 // max_line_width - indent_width.
 //
-// TODO: have -s type deal so that words don't get cut in half
-//
 string tools::fold(int indent_width, int max_line_width, string s) {
 	string indent;
+	string word;
 	for (int i = 0; i < indent_width; ++i)
 		indent += ' ';
 
@@ -818,18 +817,49 @@ string tools::fold(int indent_width, int max_line_width, string s) {
 	string new_s;
 	for (int i = 0; i < s.size(); ++i) {
 		if (s[i] == '\n') {
-			new_s += '\n';
-			char_cnt = 0;
-			continue;
+			new_s += '\n' + indent + word + " ";
+			char_cnt = indent_width + word.size() + 1;
+			word = "";
 		}
 		else {
-			if (char_cnt == max_line_width) {
-				new_s += "\n" + indent;
-				char_cnt = 0;
+
+			if (s[i] != ' ') {
+				// if s[i] is not a space add it to the current word
+				word.push_back(s[i]);
 			}
-			new_s += s[i];
+			else if (word.size() + char_cnt > max_line_width) {
+
+				new_s += "\n" + indent;
+
+				// add the word to the new line
+				char_cnt = indent_width + word.size();
+				new_s += word;
+				word = "";
+
+				// append a space if there is room
+				if (char_cnt + 1 < max_line_width) {
+					new_s += ' ';
+					char_cnt++;
+				}
+			}
+			else {
+				// add the word to the current line
+				char_cnt += word.size();
+				new_s += word;
+				word = "";
+				// append a space if there is room
+				if (char_cnt + 1 < max_line_width) {
+					new_s += ' ';
+					char_cnt++;
+				}
+			}
 		}
-		char_cnt++;
 	}
+
+	// add the last word
+	if (word.size() + char_cnt >= max_line_width)
+		new_s += "\n" + indent;
+	new_s += word;
+
 	return new_s;
 }

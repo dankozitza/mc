@@ -14,7 +14,7 @@ void dummy_func() {};
 void dummy_func(vector<string>& j) {};
 
 commands::commands() {
-	cmd_name_width = 15;
+	cmd_name_width = 10;
 }
 
 // set_program_name
@@ -61,8 +61,6 @@ void commands::set_cmds_help(string msg) {
 // If the argv vector has arguments in it the usage, synopsis, and description
 // is printed for each command named in the arguments.
 //
-// TODO: fold lines at this->line_width when printing to cout
-//
 void commands::default_help(vector<string>& argv) {
 	if (argv.size() == 0) {
 
@@ -94,9 +92,11 @@ void commands::default_help(vector<string>& argv) {
 				if (program_name != "")
 					cout << program_name << " ";
 				cout << cmds[argv[i]].usage << "\n\n";
-				cout << cmds[argv[i]].synopsis << endl;
+				cout << tools::fold(0, 80, cmds[argv[i]].synopsis) << endl;
 				if (cmds[argv[i]].description != "")
-					cout << endl << cmds[argv[i]].description << endl;
+					cout << endl << tools::fold(
+						0, 80, cmds[argv[i]].description) << endl;
+
 				cout << endl;
 			}
 			else {

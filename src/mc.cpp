@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
 			"doc",
 			doc,
 			"Parses c++ files adding documentation and "
-			"prompting the user for function descriptions.",
+			"prompting the user for function descriptions",
 			"doc CPP_FILE");
 	cmds.handle(
 			"dec",
