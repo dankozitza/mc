@@ -15,6 +15,7 @@ void dummy_func(vector<string>& j) {};
 
 commands::commands() {
 	cmd_name_width = 10;
+	max_line_width = 80;
 }
 
 // set_program_name
@@ -39,6 +40,22 @@ void commands::set_program_name(string pn) {
 //
 void commands::set_cmds_help(string msg) {
 	cmds_help = msg;
+}
+
+// set_cmd_name_width
+//
+// Sets the minimum width of the cmd name column in the help message.
+//
+void commands::set_cmd_name_width(int w) {
+	cmd_name_width = w;
+}
+
+// set_max_line_width
+//
+// Sets the maximum number of characters allowed in help output lines.
+//
+void commands::set_max_line_width(int w) {
+	max_line_width = w;
 }
 
 // default_help
@@ -74,7 +91,7 @@ void commands::default_help(vector<string>& argv) {
 				cout << "   " << left << setw(cmd_name_width) << c.first;
 				cout << " - " << tools::fold(
 					cmd_name_width + 6,
-					80,
+					max_line_width,
 					c.second.synopsis) << endl;
 			}
 
@@ -92,10 +109,11 @@ void commands::default_help(vector<string>& argv) {
 				if (program_name != "")
 					cout << program_name << " ";
 				cout << cmds[argv[i]].usage << "\n\n";
-				cout << tools::fold(0, 80, cmds[argv[i]].synopsis) << endl;
+				cout << tools::fold(
+					0, max_line_width, cmds[argv[i]].synopsis) << endl;
 				if (cmds[argv[i]].description != "")
 					cout << endl << tools::fold(
-						0, 80, cmds[argv[i]].description) << endl;
+						0, max_line_width, cmds[argv[i]].description) << endl;
 
 				cout << endl;
 			}

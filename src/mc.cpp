@@ -6,10 +6,8 @@
 // Created by Daniel Kozitza
 //
 
-#include <iostream>
-#include <cstdlib>
-#include <string.h>
 #include <csignal>
+#include <sys/ioctl.h>
 #include "commands.hpp"
 #include "tools.hpp"
 
@@ -32,8 +30,12 @@ int main(int argc, char *argv[]) {
 
 	signal(SIGINT, signals_callback_handler);
 
+	struct winsize ws;
+	ioctl(0, TIOCGWINSZ, &ws);
+
 	commands cmds;
 	cmds.set_program_name(string(argv[0]));
+	cmds.set_max_line_width(ws.ws_col);
 	cmds.set_cmds_help(
 		"\nmc is a tool for managing c++ source code.\n\n"
 		"Usage:\n\n   mc command [arguments]\n");

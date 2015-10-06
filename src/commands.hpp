@@ -29,11 +29,14 @@ class commands {
 		string               cmds_help;
 		string               program_name;
 		int                  cmd_name_width;
+		int                  max_line_width;
 
 	public:
 		commands();
 		void set_program_name(string pn);
 		void set_cmds_help(string msg);
+		void set_cmd_name_width(int w);
+		void set_max_line_width(int w);
 		void handle(
 				string cmd,
 				void (*func)(),
