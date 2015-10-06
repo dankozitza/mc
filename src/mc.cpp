@@ -41,28 +41,28 @@ int main(int argc, char *argv[]) {
 	cmds.handle(
 			"makefile",
 			makefile,
-			"Creates a make file by calling vfnmake <arguments>.",
+			"Creates a make file by calling vfnmake [arguments].",
 			"makefile [arguments]");
 	cmds.handle(
 			"build",
 			build,
-			"Calls vfnmake <arguments> then make.",
+			"Calls vfnmake [arguments] then make.",
 			"build [arguments]");
 	cmds.handle(
 			"rebuild",
 			rebuild,
-			"Calls make clean, vfnmake <arguments>, then make.",
+			"Calls make clean, vfnmake [arguments], then make.",
 			"rebuild [arguments]");
 	cmds.handle(
 			"run",
 			run,
-			"Calls vfnmake, make, then ./program <arguments>.",
+			"Calls vfnmake, make, then ./program [arguments].",
 			"run [arguments]");
 	cmds.handle(
 			"doc",
 			doc,
 			"Parses c++ files adding documentation and "
-			"prompting the user for function descriptions",
+			"prompting the user for function descriptions.",
 			"doc CPP_FILE");
 	cmds.handle(
 			"dec",
@@ -78,7 +78,7 @@ int main(int argc, char *argv[]) {
 	cmds.handle(
 			"mkreadme",
 			mkreadme,
-			"Make a README.md file from ./program <arguments>.",
+			"Make a README.md file from ./program [arguments].",
 			"mkreadme");
 
 	if (argc < 2) {
@@ -248,5 +248,12 @@ void env() {
 }
 
 void mkreadme() {
-	system("mc help >> GENERATED_README.md");
+	map<string, string> vfnconf;
+	require(get_vfnmake_conf(vfnconf));
+
+	string sys_call = "echo '# " + vfnconf["name"] + "' > README.md";
+	system(sys_call.c_str());
+
+	sys_call = "./" + vfnconf["name"] + " help >> README.md";
+	system(sys_call.c_str());
 }
