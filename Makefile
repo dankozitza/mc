@@ -1,9 +1,9 @@
-# 60ffd7daff953f818706c184c0b655b1
+# 76e822e8e17bd803d40f1f5c49a03af0
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
 LFLAGS=
-OBJS=objs/mc.o objs/commands.o objs/matches.o objs/tools.o
+OBJS=objs/mc.o objs/commands.o objs/string_manipulation.o objs/system.o objs/utils.o
 
 
 .PHONY: all
@@ -16,15 +16,19 @@ all: objs mc
 objs/mc.o: src/mc.cpp src/commands.hpp src/tools.hpp
 	@ echo "    CXX  src/mc.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/mc.cpp" -o $@
-objs/commands.o: src/commands.cpp src/commands.hpp
+objs/commands.o: src/commands.cpp src/commands.hpp src/tools.hpp
 	@ echo "    CXX  src/commands.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/commands.cpp" -o $@
-objs/matches.o: src/tools/matches.cpp src/tools/../tools.hpp
-	@ echo "    CXX  src/tools/matches.cpp"
-	@ $(CXX) $(CFLAGS) -c "src/tools/matches.cpp" -o $@
-objs/tools.o: src/tools/tools.cpp src/tools/../tools.hpp
-	@ echo "    CXX  src/tools/tools.cpp"
-	@ $(CXX) $(CFLAGS) -c "src/tools/tools.cpp" -o $@
+objs/string_manipulation.o: src/tools/string_manipulation.cpp \
+ src/tools/../tools.hpp
+	@ echo "    CXX  src/tools/string_manipulation.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools/string_manipulation.cpp" -o $@
+objs/system.o: src/tools/system.cpp src/tools/../tools.hpp
+	@ echo "    CXX  src/tools/system.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools/system.cpp" -o $@
+objs/utils.o: src/tools/utils.cpp src/tools/../tools.hpp
+	@ echo "    CXX  src/tools/utils.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools/utils.cpp" -o $@
 
 objs:
 	@ mkdir "objs"
