@@ -19,7 +19,6 @@ string         Args;
 vector<string> Argv;
 string         VfnmakeSystemCall = "vfnmake";
 
-int help_message();
 void makefile();
 void build();
 void rebuild();
@@ -27,6 +26,7 @@ void run();
 void doc();
 void dec();
 void env();
+void mkreadme();
 
 int main(int argc, char *argv[]) {
 
@@ -75,6 +75,11 @@ int main(int argc, char *argv[]) {
 			env,
 			"Displays the variables read from vfnmake.conf.",
 			"env");
+	cmds.handle(
+			"mkreadme",
+			mkreadme,
+			"Make a README.md file from ./program <arguments>.",
+			"mkreadme");
 
 	if (argc < 2) {
 		cmds.run("help", Argv);
@@ -90,27 +95,6 @@ int main(int argc, char *argv[]) {
 
 	return 0;
 }
-
-//int help_message() {
-//	cout << "\nmc is a tool for managing c++ source code.\n\n";
-//	cout << "Usage:\n\n   mc command [arguments]\n\n";
-//	cout << "Commands:\n\n";
-//	cout << "   help     - Show this help message\n";
-//	cout << "   makefile - Creates a make file by calling vfnmake <arguments>\n";
-//	cout << "   build    - Calls vfnmake <arguments> then make\n";
-//	cout << "   rebuild  - Calls make clean, vfnmake <arguments>, then make\n";
-//	cout << "   run      - Calls vfnmake, make, then ./program <arguments>\n";
-//	cout << "   doc      - Parses .cpp files adding documentation and\n";
-//	cout << "              prompting the user for function descriptions\n";
-//// TODO:
-////cout << "   mkreadme - Make a README.md file from ./program <arguments>.\n";
-////cout << "              arguments is `help` by default.\n";
-//	cout << "   dec      - Ensures that all the functions listed in the given\n";
-//	cout << "              source files are declared properly.\n";
-//	cout << "   env      - Displays the variables read from vfnmake.conf\n";
-//	cout << "\n";
-//	return EXIT_FAILURE;
-//}
 
 void makefile() {
 	cout << "mc: calling `" << VfnmakeSystemCall << "`.\n";
@@ -261,4 +245,8 @@ void env() {
 		cout << item.first << ": " << item.second << "\n";
 	}
 	cout << "\n";
+}
+
+void mkreadme() {
+	system("mc help >> GENERATED_README.md");
 }
