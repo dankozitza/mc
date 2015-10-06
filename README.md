@@ -2,12 +2,12 @@
 
 mc is a tool for managing c++ source code.
 
-Usage:
-
+###Usage:
+```bash
    mc command [arguments]
-
-Commands:
-
+```
+###Commands:
+```text
    build      - Calls vfnmake <arguments> then make.
    dec        - Ensures that all the functions listed in the given c++ source 
                 files are declared properly.
@@ -20,4 +20,4 @@ Commands:
    run        - Calls vfnmake, make, then ./program <arguments>.
 
 Use "mc help [command]" for more information about a command.
-
+```
