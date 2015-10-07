@@ -30,6 +30,7 @@ class commands {
 		string               program_name;
 		int                  cmd_name_width;
 		int                  max_line_width;
+		bool                 is_resolved;
 
 	public:
 		commands();
@@ -51,6 +52,7 @@ class commands {
 				string description = "");
 		void run(string cmd, vector<string>& arguments);
 		void default_help(vector<string>& arg);
+		bool resolved();
 };
 
 #endif

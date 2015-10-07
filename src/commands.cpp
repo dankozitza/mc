@@ -16,6 +16,7 @@ void dummy_func(vector<string>& j) {};
 commands::commands() {
 	cmd_name_width = 10;
 	max_line_width = 80;
+	is_resolved    = false;
 }
 
 // set_program_name
@@ -79,6 +80,7 @@ void commands::set_max_line_width(int w) {
 // is printed for each command named in the arguments.
 //
 void commands::default_help(vector<string>& argv) {
+	is_resolved = false;
 	if (argv.size() == 0) {
 
 		if (cmds_help != "")
@@ -124,7 +126,8 @@ void commands::default_help(vector<string>& argv) {
 					default_help(tmp);
 				}
 				else {
-					cout << "Unknown command `" << argv[i] << "`. Try '";
+					cout << "commands::default_help: Unknown command `";
+					cout << argv[i] << "`. Try '";
 					if (program_name != "")
 						cout << program_name << " "; 
 					cout << "help'.\n";
@@ -163,9 +166,47 @@ void commands::run(string cmd, vector<string>& arguments) {
 	if (cmd == "help" && it == cmds.end())
 		default_help(arguments);
 
-	else if (it != cmds.end())
+	else if (it != cmds.end()) {
+		is_resolved = true;
 		if (cmds[cmd].has_arguments)
 			cmds[cmd].func_wa(arguments);
 		else
 			cmds[cmd].func_na();
+	}
+	else {
+		cout << "commands::run: Unknown command `" << cmd << "`. Try '";
+		if (program_name != "")
+			cout << program_name << " ";
+		cout << "help'.\n";
+	}
+}
+
+// resolved
+//
+// For use in interactive loops. resolved will return true if any command
+// other than help is run. false if the command is help or unknown.
+//
+// Ex:
+//
+//    void quit() {
+//       cout << "exiting\n";
+//    }
+//
+//    ...
+//
+//       vector<string> Argv;
+//       string         cmd_str = "help";
+//       commands       cmds;
+//       cmds.set_cmds_help = "\ncmds_help\n";
+//       cmds.handle("quit", quit, "quit1", "quit2", "quit3");
+//       while (!cmds.resolved()) {
+//          cout << "   enter command: ";
+//          cin >> cmd_str >> Argv;
+//          cmds.run(cmd_str, Argv);
+//       }
+//
+// TODO: overload operator>> function to work on vectors
+//
+bool commands::resolved() {
+	return is_resolved;
 }

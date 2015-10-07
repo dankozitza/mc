@@ -24,6 +24,7 @@ void run(vector<string>& argv);
 
 int main(int argc, char *argv[]) {
 	vector<string> Argv;
+	string         cmd_str;
 
 	signal(SIGINT, signals_callback_handler);
 
@@ -80,15 +81,15 @@ int main(int argc, char *argv[]) {
 			"Make a README.md file from ./program [arguments].",
 			"mkreadme");
 
-	if (argc < 2) {
-		cmds.run("help", Argv);
-		return 0;
-	}
+	if (argc < 2)
+		cmd_str = "help";
+	else
+		cmd_str = argv[1];
 
 	for (int i = 2; i < argc; i++)
 		Argv.push_back(string(argv[i]));
 
-	cmds.run(string(argv[1]), Argv);
+	cmds.run(cmd_str, Argv);
 
 	return 0;
 }
@@ -98,16 +99,18 @@ void makefile(vector<string>& argv) {
 	for (int i = 0; i < argv.size(); i++)
 		sys_call += " " + argv[i];
 
-	cout << "mc: calling `" << sys_call << "`.\n";
+	cout << "mc::makefile: calling `" << sys_call << "`.\n";
 	require(system(sys_call.c_str()));
 }
 
 void build(vector<string>& argv) {
 	makefile(argv);
+	cout << "mc::build: calling `make`.\n";
 	require(system("make"));
 }
 
 void rebuild(vector<string>& argv) {
+	cout << "mc::rebuild: calling `make clean`.\n";
 	require(system("make clean"));
 	build(argv);
 }
@@ -126,7 +129,7 @@ void run(vector<string>& argv) {
 	string named_prog_call = "./";
 	named_prog_call += vfnconf["name"];
 	named_prog_call += args;
-	cout << "mc: calling `" << named_prog_call << "`.\n\n";
+	cout << "mc::run: calling `" << named_prog_call << "`.\n\n";
 	system(named_prog_call.c_str());
 }
 
@@ -135,12 +138,12 @@ void doc(vector<string>& argv) {
 
 	if (fnames.size() == 0) {
 		// get .cpp file names by recursing through vfnconf["src_directory"]
-		cout << "mc: automatic source file detection is under construction.\n";
+		cout << "mc::doc: auto source file detection is under construction.\n";
 	}
 	for (int fn_i = 0; fn_i < fnames.size(); fn_i++) {
-		cout << "mc: adding documentation to `" << fnames[fn_i] << "`.\n";
+		cout << "mc::doc: adding documentation to `" << fnames[fn_i] << "`.\n";
 		if (fnames.size() > 1)
-			cout << "mc: file " << fn_i+1 << " of " << fnames.size() << ".\n";
+			cout << "mc::doc: file " << fn_i+1 << " of " << fnames.size() << ".\n";
 		add_documentation(fnames[fn_i]);
 	}
 }
@@ -149,7 +152,7 @@ void dec(vector<string>& argv) {
 	vector<string> fnames = argv;
 
 	if (fnames.size() == 0) {
-		cout << "mc: automatic source file detection is under construction.\n";
+		cout << "mc::dec: auto source file detection is under construction.\n";
 	}
 
 	map<string, vector<string>> scopedecs;
@@ -157,15 +160,15 @@ void dec(vector<string>& argv) {
 	vector<string> includes; 
 
 	for (int fn_i = 0; fn_i < fnames.size(); fn_i++) {
-		cout << "mc: getting function declarations from `";
+		cout << "mc::dec: getting function declarations from `";
 		cout << fnames[fn_i] << "`.\n";
 		if (fnames.size() > 1)
-			cout << "mc: file " << fn_i+1 << " of " << fnames.size() << ".\n";
+			cout << "mc::dec: file " << fn_i+1 << " of " << fnames.size() << ".\n";
 
 		vector<string> funcdefs;
 		get_func_defs(funcdefs, fnames[fn_i]);
 
-		cout << "mc: checking funcdefs:\n\n";
+		cout << "mc::dec: checking funcdefs:\n\n";
 		for (const auto item : funcdefs)
 			cout << item << endl;
 		cout << endl;
@@ -256,8 +259,14 @@ void mkreadme() {
 	require(get_vfnmake_conf(vfnconf));
 
 	string sys_call = "echo '# " + vfnconf["name"] + "' > README.md";
-	system(sys_call.c_str());
+	cout << "mc::mkreadme: calling `" << sys_call << "`.\n";
+	require(system(sys_call.c_str()));
 
-	sys_call = "./" + vfnconf["name"] + " help >> README.md";
+	sys_call = "./" + vfnconf["name"];
+	for (int i = 0; i < vfnconf["name"].size(); ++i)
+		sys_call += " " + vfnconf["name"][i];
+	sys_call += " >> README.md";
+
+	cout << "mc::mkreadme: calling `" << sys_call << "`.\n";
 	system(sys_call.c_str());
 }
