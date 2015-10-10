@@ -1,5 +1,5 @@
 //
-// string_manipulation.cpp
+// strings.cpp
 //
 // Created by Daniel Kozitza
 //

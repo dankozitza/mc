@@ -47,6 +47,9 @@ namespace tools {
 	void get_includes(vector<string>& includes, string fname);
 	bool find_in_file(string str_re, string fname);
 	string fold(int indent_width, int max_line_width, string s);
+	istream& operator>>(istream& is, vector<string>& v);
+	ostream& operator<<(ostream& os, vector<string>& v);
+	void vectors_test();
 }
 
 #endif
