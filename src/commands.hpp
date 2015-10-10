@@ -53,6 +53,7 @@ class commands {
 		void run(string cmd, vector<string>& arguments);
 		void default_help(vector<string>& arg);
 		bool resolved();
+		void reset();
 };
 
 #endif

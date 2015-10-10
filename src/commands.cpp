@@ -210,3 +210,11 @@ void commands::run(string cmd, vector<string>& arguments) {
 bool commands::resolved() {
 	return is_resolved;
 }
+
+// reset
+//
+// Sets resolved to false.
+//
+void commands::reset() {
+	is_resolved = false;
+}
