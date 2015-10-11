@@ -12,6 +12,7 @@ mc command [arguments]
 
 ```text
    build      - Calls vfnmake [arguments] then make.
+   cnt        - Counts the number of lines in each of the source files.
    dec        - Ensures that all the functions listed in the given c++
                 source files are declared properly.
    doc        - Parses c++ files adding documentation and prompting the

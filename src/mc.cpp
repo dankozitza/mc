@@ -8,6 +8,8 @@
 
 #include <csignal>
 #include <dirent.h>
+#include <fstream>
+#include <iomanip>
 #include <sys/ioctl.h>
 #include "commands.hpp"
 #include "tools.hpp"
@@ -20,7 +22,7 @@ void dec(vector<string>& argv);
 void doc(vector<string>& argv);
 void env();
 void makefile(vector<string>& argv);
-void mkreadme();
+void mkreadme(vector<string>& argv);
 void rebuild(vector<string>& argv);
 void run(vector<string>& argv);
 
@@ -85,7 +87,7 @@ int main(int argc, char *argv[]) {
    cmds.handle(
          "cnt",
          cnt,
-         "Counts the lines of code for the program.",
+         "Counts the number of lines in each of the source files.",
          "cnt");
 
 	if (argc < 2)
@@ -261,7 +263,7 @@ void env() {
 	cout << "\n";
 }
 
-void mkreadme() {
+void mkreadme(vector<string>& argv) {
 	map<string, string> vfnconf;
 	require(get_vfnmake_conf(vfnconf));
 
@@ -270,8 +272,8 @@ void mkreadme() {
 	require(system(sys_call.c_str()));
 
 	sys_call = "./" + vfnconf["name"];
-	for (int i = 0; i < vfnconf["name"].size(); ++i)
-		sys_call += " " + vfnconf["name"][i];
+	for (int i = 0; i < argv.size(); ++i)
+		sys_call += argv[i];
 	sys_call += " >> README.md";
 
 	cout << "mc::mkreadme: calling `" << sys_call << "`.\n";
@@ -282,14 +284,56 @@ void cnt() {
 	map<string, string> vfnconf;
 	require(get_vfnmake_conf(vfnconf));
    vector<string> contents;
+   unsigned int total_lines = 0;
 
-   list_dir(vfnconf["src_directory"], contents);
+   if (!list_dir_r(vfnconf["src_directory"], contents)) {
+      perror(
+            string("mc::cnt: vfnmake src_directory `" +
+            vfnconf["src_directory"] + "` does not exist").c_str());
+      return;
+   }
 
-   cout << contents << endl;
+   vector<string> new_contents;
+   for (int i = 0; i < contents.size(); ++i) {
+      if (matches(contents[i], R"((\.cpp|\.c|\.hpp|\.h)$)")) {
+         new_contents.push_back(contents[i]);
+      }
+   }
+   contents = new_contents;
+   new_contents.clear();
 
-   contents.clear();
+   int longest = 0;
+   for (int i = 0; i < contents.size(); ++i) {
+      string fname = vfnconf["src_directory"] + "/" + contents[i];
+      if (fname.size() > longest)
+         longest = fname.size() + 1;
+   }
 
-   list_dir_r(vfnconf["src_directory"], contents);
+   ifstream fh;
+   for (int i = 0; i < contents.size(); ++i) {
+      string fname = vfnconf["src_directory"] + "/" + contents[i];
 
-   cout << contents << endl;
+      fh.open(fname, ifstream::in);
+      if (!fh.is_open()) {
+         cout << "mc::cnt: could not open file: `" << fname << "`\n";
+         continue;
+      }
+
+      char c;
+      int file_lines = 0;
+      while (fh.peek() != EOF) {
+         fh.get(c);
+         if (c == '\n')
+            ++file_lines;
+      }
+      fh.close();
+      total_lines += file_lines;
+
+      fname += ":";
+      cout << left << setw(longest) << fname;
+      cout << " " << file_lines << endl;
+   }
+
+   cout << endl << left << setw(longest) << "total_loc:";
+   cout << " " << total_lines << "\n\n";
 }

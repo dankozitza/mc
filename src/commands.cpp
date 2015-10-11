@@ -97,10 +97,12 @@ void commands::default_help(vector<string>& argv) {
 					c.second.synopsis) << endl;
 			}
 
-			cout << "\nUse \"";
+			string msg = "Use \"";
 			if (program_name != "")
-				cout << program_name << " ";
-			cout << "help [command]\" for more information about a command.\n\n";
+				msg += program_name + " ";
+			msg += "help [command]\" for more information about a command.";
+         cout << endl << tools::fold(0, max_line_width, msg);
+         cout << "\n\n";
 		}
 	}
 	else {
