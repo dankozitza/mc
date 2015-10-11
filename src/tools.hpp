@@ -50,6 +50,13 @@ namespace tools {
 	istream& operator>>(istream& is, vector<string>& v);
 	ostream& operator<<(ostream& os, vector<string>& v);
 	void vectors_test();
+   bool dir_exists(string dir_name);
+	bool list_dir(string dir_name, vector<string>& contents);
+	bool list_dir_r(string dir_name, vector<string>& contents);
+	bool list_dir_r(
+	      string dir_name,
+	      vector<string>& contents,
+	      string prefix);
 }
 
 #endif

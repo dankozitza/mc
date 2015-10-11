@@ -4,8 +4,9 @@
 // Created by Daniel Kozitza
 //
 
-#include "../tools.hpp"
 #include <csignal>
+#include <dirent.h>
+#include "../tools.hpp"
 
 // 
 // SIGABRT: 6
@@ -89,4 +90,109 @@ bool tools::require(bool func_return_val, string msg) {
       cout << "exiting.\n";
 		exit(EXIT_FAILURE);
 	}
+}
+
+// dir_exists
+//
+// Returns true if the dir_name is a directory false otherwise.
+//
+bool tools::dir_exists(string dir_name) {
+   DIR *dir;
+   struct dirent *ent;
+   if ((dir = opendir(dir_name.c_str())) != NULL) {
+      closedir(dir);
+      return true;
+   }
+   else {
+      return false;
+   }
+}
+
+// list_dir
+//
+// Takes a directory name and a reference to a vector of strings. adds file
+// and directory names found in 'list_dir' to the contents vector. Returns true
+// if the dir_name can be opened false otherwise.
+//
+bool tools::list_dir(string dir_name, vector<string>& contents) {
+   DIR *dir;
+   struct dirent *ent;
+   if ((dir = opendir(dir_name.c_str())) != NULL) {
+      // add all the files and directories within directory to contents
+      while ((ent = readdir (dir)) != NULL) {
+         contents.push_back(ent->d_name);
+      }
+      closedir(dir);
+      return true;
+   }
+   else {
+      // could not open directory
+      perror(
+         string("tools::list_dir: could not open directory: `"
+         + dir_name + "`").c_str());
+      return false;
+   }
+}
+
+// list_dir_r
+//
+// Same as list_dir but does not include . or .. directories and it goes into
+// each directory recursively.
+//
+bool tools::list_dir_r(string dir_name, vector<string>& contents) {
+   bool ret = list_dir_r(dir_name, contents, "");
+   if (!ret) {
+      perror(
+         string("tools::list_dir_r: could not open directory: `"
+         + dir_name + "`").c_str());
+   }
+   return ret;
+}
+bool tools::list_dir_r(
+      string dir_name,
+      vector<string>& contents,
+      string prefix) {
+   DIR *dir;
+   struct dirent *ent;
+
+   // remove trailing / from dir_name
+   if (dir_name.size() >= 3 && dir_name[dir_name.size() - 1] == '/')
+      dir_name.erase(dir_name.size() - 1);
+
+   if ((dir = opendir(dir_name.c_str())) != NULL) {
+
+      // add all the files and directories within directory to contents
+      while ((ent = readdir(dir)) != NULL) {
+         string new_dir_name = ent->d_name;
+         string entry_name;
+
+         // ignore . and .. directories
+         if (new_dir_name == "." || new_dir_name == "..")
+            continue;
+
+         entry_name = new_dir_name;
+
+         if (prefix != "") {
+            if (prefix == "/")
+               entry_name = prefix + entry_name;
+            else
+               entry_name = prefix + "/" + entry_name;
+         }
+
+         contents.push_back(entry_name);
+
+         if (dir_name == "/")
+            new_dir_name = dir_name + new_dir_name;
+         else
+            new_dir_name = dir_name + "/" + new_dir_name;
+
+         list_dir_r(new_dir_name, contents, entry_name);
+      }
+      closedir(dir);
+      return true;
+   }
+   else {
+      // could not open directory
+      return false;
+   }
 }

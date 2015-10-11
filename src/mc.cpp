@@ -7,6 +7,7 @@
 //
 
 #include <csignal>
+#include <dirent.h>
 #include <sys/ioctl.h>
 #include "commands.hpp"
 #include "tools.hpp"
@@ -14,6 +15,7 @@
 using namespace tools;
 
 void build(vector<string>& argv);
+void cnt();
 void dec(vector<string>& argv);
 void doc(vector<string>& argv);
 void env();
@@ -80,6 +82,11 @@ int main(int argc, char *argv[]) {
 			mkreadme,
 			"Make a README.md file from ./program [arguments].",
 			"mkreadme");
+   cmds.handle(
+         "cnt",
+         cnt,
+         "Counts the lines of code for the program.",
+         "cnt");
 
 	if (argc < 2)
 		cmd_str = "help";
@@ -269,4 +276,20 @@ void mkreadme() {
 
 	cout << "mc::mkreadme: calling `" << sys_call << "`.\n";
 	system(sys_call.c_str());
+}
+
+void cnt() {
+	map<string, string> vfnconf;
+	require(get_vfnmake_conf(vfnconf));
+   vector<string> contents;
+
+   list_dir(vfnconf["src_directory"], contents);
+
+   cout << contents << endl;
+
+   contents.clear();
+
+   list_dir_r(vfnconf["src_directory"], contents);
+
+   cout << contents << endl;
 }
