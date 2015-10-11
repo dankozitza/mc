@@ -273,7 +273,7 @@ void mkreadme(vector<string>& argv) {
 
 	sys_call = "./" + vfnconf["name"];
 	for (int i = 0; i < argv.size(); ++i)
-		sys_call += argv[i];
+		sys_call += " " + argv[i];
 	sys_call += " >> README.md";
 
 	cout << "mc::mkreadme: calling `" << sys_call << "`.\n";
