@@ -28,21 +28,21 @@ vector<void (*)(int)> SigHandlers[16];
 //
 void tools::signals_callback_handler(int signum) {
 
-	cout << "\ntools::signals_callback_handler: caught signal `";
-	cout << signum << "`\n";
+   cout << "\ntools::signals_callback_handler: caught signal `";
+   cout << signum << "`\n";
 
-	if (signum < 0 || signum > 15) {
-		cout << "	signal number out of bounds!!!\n";
-		exit(signum);
-	}
+   if (signum < 0 || signum > 15) {
+      cout << "   signal number out of bounds!!!\n";
+      exit(signum);
+   }
 
-	// run all other handlers
-	// this doesn't work if the handler exits
-	for (const auto handler : SigHandlers[signum])
-		handler(signum);
+   // run all other handlers
+   // this doesn't work if the handler exits
+   for (const auto handler : SigHandlers[signum])
+      handler(signum);
 
-	// Terminate program
-	exit(signum);
+   // Terminate program
+   exit(signum);
 }
 
 // signals
@@ -55,7 +55,7 @@ void tools::signals_callback_handler(int signum) {
 // on interrupt.
 //
 void tools::signals(int sig, void (*callback_func)(int)) {
-	SigHandlers[sig].push_back(callback_func);
+   SigHandlers[sig].push_back(callback_func);
 }
 
 // require
@@ -67,14 +67,14 @@ void tools::signals(int sig, void (*callback_func)(int)) {
 //
 bool tools::require(int sys_exit_val, string msg)
 {
-	if (sys_exit_val != 0) {
-		if (msg != "") {
-			cout << msg << "\n";
-		}
-		cout << "tools::require: got exit value `" << sys_exit_val << "`, ";
-		cout << "exiting.\n";
-		exit(EXIT_FAILURE);
-	}
+   if (sys_exit_val != 0) {
+      if (msg != "") {
+         cout << msg << "\n";
+      }
+      cout << "tools::require: got exit value `" << sys_exit_val << "`, ";
+      cout << "exiting.\n";
+      exit(EXIT_FAILURE);
+   }
 }
 
 // require
@@ -82,14 +82,14 @@ bool tools::require(int sys_exit_val, string msg)
 // exit if func_return_val is false
 //
 bool tools::require(bool func_return_val, string msg) {
-	if (func_return_val == false) {
-		if (msg != "") {
-			cout << msg << "\n";
-		}
-		cout << "tools::require: got return value `false`, ";
+   if (func_return_val == false) {
+      if (msg != "") {
+         cout << msg << "\n";
+      }
+      cout << "tools::require: got return value `false`, ";
       cout << "exiting.\n";
-		exit(EXIT_FAILURE);
-	}
+      exit(EXIT_FAILURE);
+   }
 }
 
 // dir_exists
@@ -127,9 +127,8 @@ bool tools::list_dir(string dir_name, vector<string>& contents) {
    }
    else {
       // could not open directory
-      perror(
-         string("tools::list_dir: could not open directory: `"
-         + dir_name + "`").c_str());
+      cout << "tools::list_dir: could not open directory: `" << dir_name;
+      cout << "`\n";
       return false;
    }
 }
@@ -142,9 +141,8 @@ bool tools::list_dir(string dir_name, vector<string>& contents) {
 bool tools::list_dir_r(string dir_name, vector<string>& contents) {
    bool ret = list_dir_r(dir_name, contents, "");
    if (!ret) {
-      perror(
-         string("tools::list_dir_r: could not open directory: `"
-         + dir_name + "`").c_str());
+      cout << "tools::list_dir_r: could not open directory: `" << dir_name;
+      cout << "`\n";
    }
    return ret;
 }
