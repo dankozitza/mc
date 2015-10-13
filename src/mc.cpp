@@ -43,52 +43,52 @@ int main(int argc, char *argv[]) {
       "Usage:\n\n   mc command [arguments]\n");
 
    cmds.handle(
-         "makefile",
-         makefile,
-         "Creates a make file by calling vfnmake [arguments].",
-         "makefile [arguments]");
+      "makefile",
+      makefile,
+      "Creates a make file by calling vfnmake [arguments].",
+      "makefile [arguments]");
    cmds.handle(
-         "build",
-         build,
-         "Calls vfnmake [arguments] then make.",
-         "build [arguments]");
+      "build",
+      build,
+      "Calls vfnmake [arguments] then make.",
+      "build [arguments]");
    cmds.handle(
-         "rebuild",
-         rebuild,
-         "Calls make clean, vfnmake [arguments], then make.",
-         "rebuild [arguments]");
+      "rebuild",
+      rebuild,
+      "Calls make clean, vfnmake [arguments], then make.",
+      "rebuild [arguments]");
    cmds.handle(
-         "run",
-         run,
-         "Calls vfnmake, make, then ./program [arguments].",
-         "run [arguments]");
+      "run",
+      run,
+      "Calls vfnmake, make, then ./program [arguments].",
+      "run [arguments]");
    cmds.handle(
-         "doc",
-         doc,
-         "Parses c++ files adding documentation and "
-         "prompting the user for function descriptions.",
-         "doc CPP_FILE");
+      "doc",
+      doc,
+      "Parses c++ files adding documentation and "
+      "prompting the user for function descriptions.",
+      "doc CPP_FILE");
    cmds.handle(
-         "dec",
-         dec,
-         "Ensures that all the functions listed in the given c++ "
-         "source files are declared properly.",
-         "dec CPP_FILE");
+      "dec",
+      dec,
+      "Ensures that all the functions listed in the given c++ "
+      "source files are declared properly.",
+      "dec CPP_FILE");
    cmds.handle(
-         "env",
-         env,
-         "Displays the variables read from vfnmake.conf.",
-         "env");
+      "env",
+      env,
+      "Displays the variables read from vfnmake.conf.",
+      "env");
    cmds.handle(
-         "mkreadme",
-         mkreadme,
-         "Make a README.md file from ./program [arguments].",
-         "mkreadme");
+      "mkreadme",
+      mkreadme,
+      "Make a README.md file from ./program [arguments].",
+      "mkreadme");
    cmds.handle(
-         "cnt",
-         cnt,
-         "Counts the number of lines in each of the source files.",
-         "cnt");
+      "cnt",
+      cnt,
+      "Counts the number of lines in each of the source files.",
+      "cnt");
 
    if (argc < 2)
       cmd_str = "help";
@@ -237,23 +237,11 @@ void dec(vector<string>& argv) {
          }
       }
 
-      // TODO: finish all these methods of searching for the header_fname
-
-      //if (!found_header_fname) {
-      //   // here try to replace the extention of fnames with hpp then h
-      //}
-
-      //if (!found_header_fname) {
-      //   // here try to replace the extention and move up one dir
-      //}
-      //
-      //if (!found_header_fname) {
-      //   // here try to look in the fnames files themselves
-      //}
-      //
-      //if (!found_header_fname) {
-      //   // here check every file found in the src dir
-      //}
+      // TODO: finish all these ways of searching for the header_fname
+      //          - replace the extention of fnames with hpp then h
+      //          - replace the extention and move up one dir
+      //          - look in the fnames files themselves
+      //          - check every file found in the src dir
 
       cout << "mc::dec: new_declarations:\n\n";
       for (const auto item : ns_c_pair.second)
