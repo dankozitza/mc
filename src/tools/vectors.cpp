@@ -15,14 +15,14 @@ istream& tools::operator>>(istream& is, vector<string>& v) {
    is.get(c);
    while (c != '\n') {
 
-      if (c != ' ' && c != '   ') {
+      if (c != ' ' && c != '	') {
 
          if (v.empty() || v.size() == cnt)
             v.push_back("");
 
          v[cnt] += c;
       }
-      else if (last != ' ' && last != '   ') {
+      else if (last != ' ' && last != '	') {
          // if c is a space but last is not then the word is done
          cnt++;
       }
