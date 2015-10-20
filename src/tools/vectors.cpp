@@ -13,7 +13,7 @@ istream& tools::operator>>(istream& is, vector<string>& v) {
    v.clear();
 
    is.get(c);
-   while (c != '\n') {
+   while (is.good() && c != '\n') {
 
       if (c != ' ' && c != '	') {
 
