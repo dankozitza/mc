@@ -19,7 +19,6 @@ using namespace tools;
 void build(vector<string>& argv);
 void cnt();
 void dec(vector<string>& argv);
-void doc(vector<string>& argv);
 void env();
 void makefile(vector<string>& argv);
 void mkreadme(vector<string>& argv);
@@ -62,12 +61,6 @@ int main(int argc, char *argv[]) {
       run,
       "Calls vfnmake, make, then ./program [arguments].",
       "run [arguments]");
-   cmds.handle(
-      "doc",
-      doc,
-      "Parses c++ files adding documentation and "
-      "prompting the user for function descriptions.",
-      "doc CPP_FILE");
    cmds.handle(
       "dec",
       dec,
@@ -140,21 +133,6 @@ void run(vector<string>& argv) {
    named_prog_call += args;
    cout << "mc::run: calling `" << named_prog_call << "`.\n\n";
    system(named_prog_call.c_str());
-}
-
-void doc(vector<string>& argv) {
-   vector<string> fnames = argv;
-
-   if (fnames.size() == 0) {
-      // get .cpp file names by recursing through vfnconf["src_directory"]
-      cout << "mc::doc: auto source file detection is under construction.\n";
-   }
-   for (int fn_i = 0; fn_i < fnames.size(); fn_i++) {
-      cout << "mc::doc: adding documentation to `" << fnames[fn_i] << "`.\n";
-      if (fnames.size() > 1)
-         cout << "mc::doc: file " << fn_i+1 << " of " << fnames.size() << ".\n";
-      add_documentation(fnames[fn_i]);
-   }
 }
 
 void dec(vector<string>& argv) {
