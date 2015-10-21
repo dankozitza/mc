@@ -143,9 +143,8 @@ void dec(vector<string>& argv) {
       map<string, string> vfnconf;
       require(get_vfnmake_conf(vfnconf));
       if (!list_dir_r(vfnconf["src_directory"], fnames)) {
-         perror(
-               string("mc::dec: vfnmake src_directory `" +
-               vfnconf["src_directory"] + "` does not exist").c_str());
+         cerr << "mc::dec: vfnmake src_directory `" + vfnconf["src_directory"];
+         cerr << "` does not exist.";
          return;
       }
       vector<string> tmp;
@@ -171,12 +170,6 @@ void dec(vector<string>& argv) {
 
       vector<string> funcdefs;
       get_func_defs(funcdefs, fnames[fn_i]);
-
-      cout << "mc::dec: checking funcdefs:\n\n";
-      for (const auto item : funcdefs)
-         cout << item << endl;
-      cout << endl;
-
       form_scoped_declarations(scopedecs, funcdefs);
 
       get_includes(includes, fnames[fn_i]);

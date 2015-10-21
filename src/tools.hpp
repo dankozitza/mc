@@ -19,7 +19,6 @@ namespace tools {
    bool get_vfnmake_conf(map<string, string>& config);
    void signals_callback_handler(int signum);
    void signals(int sig, void (*callback_func)(int));
-   void add_documentation(string fname);
    void get_func_defs(vector<string>& definitions, string fname);
    void form_scoped_declarations(
          map<string, vector<string>> &sd,
