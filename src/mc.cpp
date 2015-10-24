@@ -217,7 +217,7 @@ void dec(vector<string>& argv) {
       cout << "mc::dec: new_declarations:\n\n";
       for (const auto item : ns_c_pair.second)
          cout << item << endl;
-   
+
       cout << endl;
 
       require(
@@ -263,9 +263,8 @@ void cnt() {
    unsigned int total_lines = 0;
 
    if (!list_dir_r(vfnconf["src_directory"], contents)) {
-      perror(
-            string("mc::cnt: vfnmake src_directory `" +
-            vfnconf["src_directory"] + "` does not exist").c_str());
+      cerr << "mc::cnt: vfnmake src_directory `" + vfnconf["src_directory"];
+      cerr << "` does not exist\n";
       return;
    }
 
