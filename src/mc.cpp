@@ -309,6 +309,10 @@ void cnt() {
       cout << " " << file_lines << endl;
    }
 
+   //vector<size_t> pos = tools::radix_sort<128>(contents);
+   //for (auto i : pos)
+    //  std::cout << contents[i] << std::endl;
+
    cout << endl << left << setw(longest) << "total_loc:";
    cout << " " << total_lines << "\n\n";
 }
