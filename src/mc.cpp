@@ -14,12 +14,7 @@
 #include <sys/ioctl.h>
 #include "commands.hpp"
 #include "tools.hpp"
-
-#include <vector>
-#include <array>
-#include <string>
-#include <algorithm>
-#include <numeric>
+#include "sorters.hpp"
 
 using namespace tools;
 
@@ -31,56 +26,6 @@ void makefile(vector<string>& argv);
 void mkreadme(vector<string>& argv);
 void rebuild(vector<string>& argv);
 void run(vector<string>& argv);
-
-template <typename E>
-size_t bin(const E& elem, size_t digit)
-{
-	return elem.size() > digit ? size_t(elem[digit]) + 1 : 0;
-}
-
-template <size_t R, typename C, typename P>
-void radix_sort(P& pos, const C& data, size_t digit)
-{
-    using A = std::array<size_t, R + 1>;
-	A count = {};
-	P prev(pos);
-
-	for (auto i : prev)
-		++count[bin(data[i], digit)];
-
-	A done = {}, offset = {{0}};
-	std::partial_sum(count.begin(), count.end() - 1, offset.begin() + 
-1);
-
-	for (auto i : prev)
-	{
-		size_t b = bin(data[i], digit);
-		pos[offset[b] + done[b]++] = i;
-	}
-}
-
-struct shorter
-{
-	template <typename A>
-	bool operator()(const A& a, const A& b) { return a.size() < 
-b.size(); }
-};
-
-template <size_t R, typename C>
-std::vector<size_t> radix_sort(const C& data)
-{
-	std::vector<size_t> pos(data.size());
-	std::iota(pos.begin(), pos.end(), 0);
-
-	size_t width = std::max_element(data.begin(), data.end(), 
-shorter())->size();
-
-	for (long digit = long(width) - 1; digit >= 0; --digit)
-		radix_sort<R>(pos, data, size_t(digit));
-
-	return pos;
-}
-
 
 int main(int argc, char *argv[]) {
    vector<string> Argv;
@@ -341,6 +286,8 @@ void cnt() {
          longest = fname.size() + 1;
    }
 
+   sorters::radix(contents);
+
    ifstream fh;
    for (int i = 0; i < contents.size(); ++i) {
       string fname = vfnconf["src_directory"] + "/" + contents[i];
@@ -365,10 +312,6 @@ void cnt() {
       cout << left << setw(longest) << fname;
       cout << " " << file_lines << endl;
    }
-
-   vector<size_t> pos = radix_sort<128>(contents);
-   for (auto i : pos)
-      std::cout << contents[i] << std::endl;
 
    cout << endl << left << setw(longest) << "total_loc:";
    cout << " " << total_lines << "\n\n";

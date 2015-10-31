@@ -1,5 +1,6 @@
 //
 // tools.hpp
+//
 // utility functions for mc
 //
 // Created by Daniel Kozitza
@@ -56,24 +57,6 @@ namespace tools {
          string dir_name,
          vector<string>& contents,
          string prefix);
-
-
-   // doesn't work
-   //
-   //   vector<string> contents = generate();
-   //   vector<size_t> pos = tools::radix_sort<128>(contents);
-   //   for (auto i : pos)
-   //      std::cout << contents[i] << std::endl;
-   //
-   //template <typename E>
-   //size_t bin(const E& elem, size_t digit);
-   //
-   //template <size_t R, typename C, typename P>
-   //void radix_sort(P& pos, const C& data, size_t digit);
-   //
-   //template <size_t R, typename C>
-   //vector<size_t> radix_sort(const C& data);
-
 }
 
 #endif

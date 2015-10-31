@@ -1,9 +1,9 @@
-# eb031971da42b6dcfd5079ad935beee7
+# 9d40ae0885af3c924b4f4a0a1dd22d21
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
 LFLAGS=
-OBJS=objs/mc.o objs/commands.o objs/vectors.o objs/system.o objs/utils.o objs/strings.o
+OBJS=objs/mc.o objs/commands.o objs/radix.o objs/vectors.o objs/system.o objs/utils.o objs/strings.o
 
 
 .PHONY: all
@@ -13,12 +13,15 @@ all: objs mc
 	@ echo "    LINK ./mc"
 	@ $(CXX) $(OBJS) -o "./mc" $(LFLAGS)
 
-objs/mc.o: src/mc.cpp src/commands.hpp src/tools.hpp
+objs/mc.o: src/mc.cpp src/commands.hpp src/tools.hpp src/sorters.hpp
 	@ echo "    CXX  src/mc.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/mc.cpp" -o $@
 objs/commands.o: src/commands.cpp src/commands.hpp src/tools.hpp
 	@ echo "    CXX  src/commands.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/commands.cpp" -o $@
+objs/radix.o: src/sorters/radix.cpp src/sorters/../sorters.hpp
+	@ echo "    CXX  src/sorters/radix.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/sorters/radix.cpp" -o $@
 objs/vectors.o: src/tools/vectors.cpp src/tools/../tools.hpp
 	@ echo "    CXX  src/tools/vectors.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/tools/vectors.cpp" -o $@
