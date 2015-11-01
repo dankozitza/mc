@@ -145,7 +145,7 @@ void commands::handle(
       string synopsis,
       string usage,
       string description) {
-   
+
    Command tmp = {dummy_func, func, true, synopsis, usage, description};
    cmds[cmd]   = tmp;
 }

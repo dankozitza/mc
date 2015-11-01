@@ -107,19 +107,6 @@ bool tools::matches(vector<string>& results, string s, string str_re) {
    }
    return true;
 }
-//bool tools::matches(map<string, string>& results, string s, string str_re) {
-//   smatch sm;
-//   results = map<string, string>();
-//   bool ret = matches(sm, s, str_re);
-//   if (!ret)
-//      return false;
-//   for (unsigned i=0; i<sm.size(); i++) {
-//      char si [33];
-//      sprintf(si, "%d", i);
-//      results[si] = sm[i];
-//   }
-//   return true;
-//}
 
 // matches
 //

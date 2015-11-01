@@ -260,12 +260,17 @@ void mkreadme(vector<string>& argv) {
 
 void cnt() {
    map<string, string> vfnconf;
-   require(get_vfnmake_conf(vfnconf));
    vector<string> contents;
    unsigned int total_lines = 0;
+   string src_dir;
 
-   if (!list_dir_r(vfnconf["src_directory"], contents)) {
-      cerr << "mc::cnt: vfnmake src_directory `" + vfnconf["src_directory"];
+   if (get_vfnmake_conf(vfnconf))
+      src_dir = vfnconf["src_directory"];
+   else
+      src_dir = ".";
+
+   if (!list_dir_r(src_dir, contents)) {
+      cerr << "mc::cnt: vfnmake src_directory `" + src_dir;
       cerr << "` does not exist\n";
       return;
    }
@@ -281,7 +286,7 @@ void cnt() {
 
    int longest = 0;
    for (int i = 0; i < contents.size(); ++i) {
-      string fname = vfnconf["src_directory"] + "/" + contents[i];
+      string fname = src_dir + "/" + contents[i];
       if (fname.size() > longest)
          longest = fname.size() + 1;
    }
@@ -290,7 +295,7 @@ void cnt() {
 
    ifstream fh;
    for (int i = 0; i < contents.size(); ++i) {
-      string fname = vfnconf["src_directory"] + "/" + contents[i];
+      string fname = src_dir + "/" + contents[i];
 
       fh.open(fname, ifstream::in);
       if (!fh.is_open()) {
