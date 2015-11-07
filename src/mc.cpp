@@ -12,6 +12,7 @@
 #include <iomanip>
 #include <iostream>
 #include <sys/ioctl.h>
+#include <omp.h>
 #include "commands.hpp"
 #include "tools.hpp"
 #include "sorters.hpp"
@@ -26,6 +27,8 @@ void makefile(vector<string>& argv);
 void mkreadme(vector<string>& argv);
 void rebuild(vector<string>& argv);
 void run(vector<string>& argv);
+void runtime(vector<string>& argv);
+void runtimeavg(vector<string>& argv);
 
 int main(int argc, char *argv[]) {
    vector<string> Argv;
@@ -63,6 +66,16 @@ int main(int argc, char *argv[]) {
       run,
       "Calls vfnmake, make, then ./program [arguments].",
       "run [arguments]");
+   cmds.handle(
+      "runtime",
+      runtime,
+      "time the run command.",
+      "runtime [arguments]");
+   cmds.handle(
+      "runtimeavg",
+      runtimeavg,
+      "Get the average time of multiple run executions.",
+      "runtimeavg [RUNS=10, [arguments]]");
    cmds.handle(
       "dec",
       dec,
@@ -120,10 +133,6 @@ void rebuild(vector<string>& argv) {
 }
 
 void run(vector<string>& argv) {
-   string args;
-   for (int i = 0; i < argv.size(); i++)
-      args += " " + argv[i];
-
    vector<string> junk;
    build(junk);
 
@@ -132,9 +141,70 @@ void run(vector<string>& argv) {
 
    string named_prog_call = "./";
    named_prog_call += vfnconf["name"];
-   named_prog_call += args;
-   cout << "mc::run: calling `" << named_prog_call << "`.\n\n";
+   for (int i = 0; i < argv.size(); i++)
+      named_prog_call += " " + argv[i];
+
+   cout << "mc::run: calling `" << named_prog_call << "`.\n";
    system(named_prog_call.c_str());
+}
+
+void runtime(vector<string>& argv) {
+   double start, end;
+
+   vector<string> junk;
+   build(junk);
+   map<string, string> vfnconf;
+   require(get_vfnmake_conf(vfnconf));
+
+   string named_prog_call = "./";
+   named_prog_call += vfnconf["name"];
+   for (int i = 0; i < argv.size(); i++)
+      named_prog_call += " " + argv[i];
+   cout << "mc::runtime: calling `" << named_prog_call << "`.\n";
+
+   start = omp_get_wtime();
+   system(named_prog_call.c_str());
+   end = omp_get_wtime();
+   
+   cout << "mc::runtime: execution time (seconds): `";
+   cout << end - start << "`.\n";
+}
+
+void runtimeavg(vector<string>& argv) {
+   double start, end, average = 0;
+   int runs;
+
+   vector<string> junk;
+   build(junk);
+   map<string, string> vfnconf;
+   require(get_vfnmake_conf(vfnconf));
+   if (argv.size() < 1)
+      runs = 10;
+   else
+      runs = atoi(argv[0].c_str());
+
+   for(int j = 0; j < runs; ++j) {
+      cout << "mc::runtimeavg: starting run " << j + 1 << "/" << runs << ".\n";
+
+      string named_prog_call = "./";
+      named_prog_call += vfnconf["name"];
+      for (int z = 1; z < argv.size(); z++)
+         named_prog_call += " " + argv[z];
+      cout << "mc::runtimeavg: calling `" << named_prog_call << "`.\n";
+
+      start = omp_get_wtime();
+      system(named_prog_call.c_str());
+      end = omp_get_wtime();
+
+      if (average != 0)
+         average = (average + (end - start)) / 2;
+      else
+         average = end - start;
+   }
+
+   cout << "mc::runtimeavg: execution time average after ";
+   cout << runs << " runs (seconds): `";
+   cout << average << "`.\n";
 }
 
 void dec(vector<string>& argv) {

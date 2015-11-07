@@ -1,8 +1,8 @@
-# 9d40ae0885af3c924b4f4a0a1dd22d21
+# 8df05d685db9f1f9eab4bb7ef57486f7
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
-LFLAGS=
+LFLAGS= -l gomp
 OBJS=objs/mc.o objs/commands.o objs/radix.o objs/vectors.o objs/system.o objs/utils.o objs/strings.o
 
 
