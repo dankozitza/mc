@@ -139,13 +139,13 @@ void run(vector<string>& argv) {
    map<string, string> vfnconf;
    require(get_vfnmake_conf(vfnconf));
 
-   string named_prog_call = "./";
-   named_prog_call += vfnconf["name"];
+   string system_call = "./";
+   system_call += vfnconf["name"];
    for (int i = 0; i < argv.size(); i++)
-      named_prog_call += " " + argv[i];
+      system_call += " " + argv[i];
 
-   cout << "mc::run: calling `" << named_prog_call << "`.\n";
-   system(named_prog_call.c_str());
+   cout << "mc::run: calling `" << system_call << "`.\n";
+   system(system_call.c_str());
 }
 
 void runtime(vector<string>& argv) {
@@ -156,14 +156,14 @@ void runtime(vector<string>& argv) {
    map<string, string> vfnconf;
    require(get_vfnmake_conf(vfnconf));
 
-   string named_prog_call = "./";
-   named_prog_call += vfnconf["name"];
+   string system_call = "./";
+   system_call += vfnconf["name"];
    for (int i = 0; i < argv.size(); i++)
-      named_prog_call += " " + argv[i];
-   cout << "mc::runtime: calling `" << named_prog_call << "`.\n";
+      system_call += " " + argv[i];
+   cout << "mc::runtime: calling `" << system_call << "`.\n";
 
    start = omp_get_wtime();
-   system(named_prog_call.c_str());
+   system(system_call.c_str());
    end = omp_get_wtime();
    
    cout << "mc::runtime: execution time (seconds): `";
@@ -186,14 +186,14 @@ void runtimeavg(vector<string>& argv) {
    for(int j = 0; j < runs; ++j) {
       cout << "mc::runtimeavg: starting run " << j + 1 << "/" << runs << ".\n";
 
-      string named_prog_call = "./";
-      named_prog_call += vfnconf["name"];
+      string system_call = "./";
+      system_call += vfnconf["name"];
       for (int z = 1; z < argv.size(); z++)
-         named_prog_call += " " + argv[z];
-      cout << "mc::runtimeavg: calling `" << named_prog_call << "`.\n";
+         system_call += " " + argv[z];
+      cout << "mc::runtimeavg: calling `" << system_call << "`.\n";
 
       start = omp_get_wtime();
-      system(named_prog_call.c_str());
+      system(system_call.c_str());
       end = omp_get_wtime();
 
       if (average != 0)
