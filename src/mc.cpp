@@ -31,6 +31,8 @@ void runtime(vector<string>& argv);
 void runtimeavg(vector<string>& argv);
 
 int main(int argc, char *argv[]) {
+if (argc <= 1)
+   return 0;
    vector<string> Argv;
    string         cmd_str;
 
@@ -69,7 +71,7 @@ int main(int argc, char *argv[]) {
    cmds.handle(
       "runtime",
       runtime,
-      "time the run command.",
+      "Time the run command.",
       "runtime [arguments]");
    cmds.handle(
       "runtimeavg",
@@ -133,9 +135,8 @@ void rebuild(vector<string>& argv) {
 }
 
 void run(vector<string>& argv) {
-   vector<string> junk;
-   build(junk);
-
+   vector<string> empty_v;
+   build(empty_v);
    map<string, string> vfnconf;
    require(get_vfnmake_conf(vfnconf));
 
@@ -183,13 +184,13 @@ void runtimeavg(vector<string>& argv) {
    else
       runs = atoi(argv[0].c_str());
 
+   string system_call = "./";
+   system_call += vfnconf["name"];
+   for (int z = 1; z < argv.size(); z++)
+      system_call += " " + argv[z];
+
    for(int j = 0; j < runs; ++j) {
       cout << "mc::runtimeavg: starting run " << j + 1 << "/" << runs << ".\n";
-
-      string system_call = "./";
-      system_call += vfnconf["name"];
-      for (int z = 1; z < argv.size(); z++)
-         system_call += " " + argv[z];
       cout << "mc::runtimeavg: calling `" << system_call << "`.\n";
 
       start = omp_get_wtime();
