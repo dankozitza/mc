@@ -31,8 +31,6 @@ void runtime(vector<string>& argv);
 void runtimeavg(vector<string>& argv);
 
 int main(int argc, char *argv[]) {
-if (argc == 1)
-   return 0;
    vector<string> Argv;
    string         cmd_str;
 
