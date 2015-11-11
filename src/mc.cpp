@@ -54,17 +54,17 @@ int main(int argc, char *argv[]) {
    cmds.handle(
       "build",
       build,
-      "Calls vfnmkmc [arguments] then make.",
+      "Calls vfnmkmc [arguments] (if needed) then calls make.",
       "build [arguments]");
    cmds.handle(
       "rebuild",
       rebuild,
-      "Calls make clean, vfnmkmc [arguments], then make.",
+      "Calls make clean, vfnmkmc [arguments] (if needed), then make.",
       "rebuild [arguments]");
    cmds.handle(
       "run",
       run,
-      "Calls vfnmkmc, make, then ./program [arguments].",
+      "Calls vfnmkmc (if needed), make, then ./program [arguments].",
       "run [arguments]");
    cmds.handle(
       "runtime",
@@ -159,7 +159,7 @@ void makefile(vector<string>& argv) {
 }
 
 void build(vector<string>& argv) {
-   if (new_makefile())
+   if (new_makefile() || argv.size() > 0)
       makefile(argv);
    cout << "mc::build: calling `make`.\n";
    require(system("make"));
