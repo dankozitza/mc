@@ -19,7 +19,8 @@ using namespace std;
 namespace tools {
 
    // utils.cpp
-   bool get_vfnmake_conf(map<string, string>& config);
+   bool get_vfnmkmc_conf(map<string, string>& config);
+   bool save_vfnmkmc_conf(map<string, string>& config);
    void get_includes(vector<string>& includes, string fname);
    void get_func_defs(vector<string>& definitions, string fname);
    void form_scoped_declarations(

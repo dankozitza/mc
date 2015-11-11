@@ -11,16 +11,16 @@
 
 bool CalledAtexit = false;
 
-// get_vfnmake_conf
+// get_vfnmkmc_conf
 //
 // Reads vnfmake.conf variables into 'config'.
 //
-bool tools::get_vfnmake_conf(map<string, string>& config) {
+bool tools::get_vfnmkmc_conf(map<string, string>& config) {
 
    ifstream fh;
-   fh.open("vfnmake.conf", ifstream::in);
+   fh.open("vfnmkmc.conf", ifstream::in);
    if (!fh.is_open()) {
-      cout << "tools::get_vfnmake_conf: couldn't open vfnmake.conf.\n";
+      cout << "tools::get_vfnmkmc_conf: couldn't open vfnmkmc.conf.\n";
       return false;
    }
    while(fh.peek() != EOF) {
@@ -28,11 +28,23 @@ bool tools::get_vfnmake_conf(map<string, string>& config) {
       getline(fh, line);
 
       string m[3];
-      if (matches(m, line, "^(\\w+):\\s*(.*)$"))
+      if (matches(m, line, R"(^\s*([^:]*):\s*(.*)$)"))
          config[m[1]] = m[2];
    }
 
    fh.close();
+   return true;
+}
+
+bool tools::save_vfnmkmc_conf(map<string, string>& config) {
+   FILE * pFile;
+   pFile = fopen("vfnmkmc.conf", "w");
+   for (auto& pair : config) {
+      string tmp = pair.first + ":";
+      fprintf(pFile, "%-20s%s\n", tmp.c_str(), pair.second.c_str());
+   }
+
+   fclose(pFile);
    return true;
 }
 

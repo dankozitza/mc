@@ -31,7 +31,7 @@ void runtime(vector<string>& argv);
 void runtimeavg(vector<string>& argv);
 
 int main(int argc, char *argv[]) {
-if (argc <= 1)
+if (argc == 1)
    return 0;
    vector<string> Argv;
    string         cmd_str;
@@ -51,22 +51,22 @@ if (argc <= 1)
    cmds.handle(
       "makefile",
       makefile,
-      "Creates a make file by calling vfnmake [arguments].",
+      "Creates a make file by calling vfnmkmc [arguments].",
       "makefile [arguments]");
    cmds.handle(
       "build",
       build,
-      "Calls vfnmake [arguments] then make.",
+      "Calls vfnmkmc [arguments] then make.",
       "build [arguments]");
    cmds.handle(
       "rebuild",
       rebuild,
-      "Calls make clean, vfnmake [arguments], then make.",
+      "Calls make clean, vfnmkmc [arguments], then make.",
       "rebuild [arguments]");
    cmds.handle(
       "run",
       run,
-      "Calls vfnmake, make, then ./program [arguments].",
+      "Calls vfnmkmc, make, then ./program [arguments].",
       "run [arguments]");
    cmds.handle(
       "runtime",
@@ -87,7 +87,7 @@ if (argc <= 1)
    cmds.handle(
       "env",
       env,
-      "Displays the variables read from vfnmake.conf.",
+      "Displays the variables read from vfnmkmc.conf.",
       "env");
    cmds.handle(
       "mkreadme",
@@ -113,8 +113,46 @@ if (argc <= 1)
    return 0;
 }
 
+// new_makefile
+//
+// Used during build to determine if vfnmkmc needs to be called. Saves a list
+// of source and header files in vfnmkmc.conf and compares with current dir
+// listing.
+//
+// Return:
+//    true  - The file listing was different, a new makefile is needed.
+//    false - The file listing was identical, no need to call vfnmkmc.
+//
+bool new_makefile() {
+   map<string, string> vfnconf;
+   string src_files = "";
+   get_vfnmkmc_conf(vfnconf);
+   vector<string> files;
+   require(list_dir_r(vfnconf["src_directory"], files));
+
+   sorters::radix(files);
+   if (files.size() > 0) {
+      for (int i = 0; i < files.size() - 1; ++i) {
+         if (matches(files[i], R"((\.cpp|\.c|\.hpp|\.h)$)"))
+         src_files += files[i] + " ";
+      }
+      if (matches(files[files.size() - 1], R"((\.cpp|\.c|\.hpp|\.h)$)"))
+         src_files += files[files.size() - 1];
+   }
+
+
+   if (vfnconf["src_files"] != src_files) {
+      // could hash this to shorten variable for larger projects
+      vfnconf["src_files"] = src_files;
+      save_vfnmkmc_conf(vfnconf);
+      return true;
+   }
+
+   return false;
+}
+
 void makefile(vector<string>& argv) {
-   string sys_call = "vfnmake";
+   string sys_call = "vfnmkmc";
    for (int i = 0; i < argv.size(); i++)
       sys_call += " " + argv[i];
 
@@ -123,7 +161,8 @@ void makefile(vector<string>& argv) {
 }
 
 void build(vector<string>& argv) {
-   makefile(argv);
+   if (new_makefile())
+      makefile(argv);
    cout << "mc::build: calling `make`.\n";
    require(system("make"));
 }
@@ -138,7 +177,7 @@ void run(vector<string>& argv) {
    vector<string> empty_v;
    build(empty_v);
    map<string, string> vfnconf;
-   require(get_vfnmake_conf(vfnconf));
+   require(get_vfnmkmc_conf(vfnconf));
 
    string system_call = "./";
    system_call += vfnconf["name"];
@@ -155,7 +194,7 @@ void runtime(vector<string>& argv) {
    vector<string> junk;
    build(junk);
    map<string, string> vfnconf;
-   require(get_vfnmake_conf(vfnconf));
+   require(get_vfnmkmc_conf(vfnconf));
 
    string system_call = "./";
    system_call += vfnconf["name"];
@@ -178,7 +217,7 @@ void runtimeavg(vector<string>& argv) {
    vector<string> junk;
    build(junk);
    map<string, string> vfnconf;
-   require(get_vfnmake_conf(vfnconf));
+   require(get_vfnmkmc_conf(vfnconf));
    if (argv.size() < 1)
       runs = 10;
    else
@@ -214,9 +253,9 @@ void dec(vector<string>& argv) {
    // get list of all src files
    if (fnames.size() == 0) {
       map<string, string> vfnconf;
-      require(get_vfnmake_conf(vfnconf));
+      require(get_vfnmkmc_conf(vfnconf));
       if (!list_dir_r(vfnconf["src_directory"], fnames)) {
-         cerr << "mc::dec: vfnmake src_directory `" + vfnconf["src_directory"];
+         cerr << "mc::dec: vfnmkmc src_directory `" + vfnconf["src_directory"];
          cerr << "` does not exist.";
          return;
       }
@@ -303,9 +342,9 @@ void dec(vector<string>& argv) {
 
 void env() {
    map<string, string> vfnconf;
-   require(get_vfnmake_conf(vfnconf));
+   require(get_vfnmkmc_conf(vfnconf));
 
-   cout << "\nvfnmake.conf:\n\n";
+   cout << "\nvfnmkmc.conf:\n\n";
    for (const auto item : vfnconf) {
       cout << item.first << ": " << item.second << "\n";
    }
@@ -314,7 +353,7 @@ void env() {
 
 void mkreadme(vector<string>& argv) {
    map<string, string> vfnconf;
-   require(get_vfnmake_conf(vfnconf));
+   require(get_vfnmkmc_conf(vfnconf));
 
    string sys_call = "echo '# " + vfnconf["name"] + "' > README.md";
    cout << "mc::mkreadme: calling `" << sys_call << "`.\n";
@@ -335,13 +374,13 @@ void cnt() {
    unsigned int total_lines = 0;
    string src_dir;
 
-   if (get_vfnmake_conf(vfnconf))
+   if (get_vfnmkmc_conf(vfnconf))
       src_dir = vfnconf["src_directory"];
    else
       src_dir = ".";
 
    if (!list_dir_r(src_dir, contents)) {
-      cerr << "mc::cnt: vfnmake src_directory `" + src_dir;
+      cerr << "mc::cnt: vfnmkmc src_directory `" + src_dir;
       cerr << "` does not exist\n";
       return;
    }
