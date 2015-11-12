@@ -7,6 +7,7 @@
 //
 
 #include <fstream>
+#include "../sorters.hpp"
 #include "../tools.hpp"
 
 bool CalledAtexit = false;
@@ -537,4 +538,22 @@ void tools::get_includes(vector<string>& includes, string fname) {
    }
 
    ifh.close();
+}
+
+string tools::get_src_files(string src_dir) {
+   string src_files;
+   vector<string> files;
+   require(list_dir_r(src_dir, files));
+
+   sorters::radix(files);
+   if (files.size() > 0) {
+      for (int i = 0; i < files.size() - 1; ++i) {
+         if (matches(files[i], R"((\.cpp|\.c|\.hpp|\.h)$)"))
+            src_files += files[i] + " ";
+      }
+      if (matches(files[files.size() - 1], R"((\.cpp|\.c|\.hpp|\.h)$)"))
+         src_files += files[files.size() - 1];
+   }
+
+   return src_files;
 }

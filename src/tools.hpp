@@ -31,6 +31,7 @@ namespace tools {
          vector<string> new_declarations,
          string fname);
    bool find_in_file(string str_re, string fname);
+   string get_src_files(string src_dir);
 
    // system.cpp
    void signals_callback_handler(int signum);

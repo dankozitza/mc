@@ -111,44 +111,6 @@ int main(int argc, char *argv[]) {
    return 0;
 }
 
-// new_makefile
-//
-// Used during build to determine if vfnmkmc needs to be called. Saves a list
-// of source and header files in vfnmkmc.conf and compares with current dir
-// listing.
-//
-// Return:
-//    true  - The file listing was different, a new makefile is needed.
-//    false - The file listing was identical, no need to call vfnmkmc.
-//
-bool new_makefile() {
-   map<string, string> vfnconf;
-   string src_files = "";
-   get_vfnmkmc_conf(vfnconf);
-   vector<string> files;
-   require(list_dir_r(vfnconf["src_directory"], files));
-
-   sorters::radix(files);
-   if (files.size() > 0) {
-      for (int i = 0; i < files.size() - 1; ++i) {
-         if (matches(files[i], R"((\.cpp|\.c|\.hpp|\.h)$)"))
-         src_files += files[i] + " ";
-      }
-      if (matches(files[files.size() - 1], R"((\.cpp|\.c|\.hpp|\.h)$)"))
-         src_files += files[files.size() - 1];
-   }
-
-
-   if (vfnconf["src_files"] != src_files) {
-      // could hash this to shorten variable for larger projects
-      vfnconf["src_files"] = src_files;
-      save_vfnmkmc_conf(vfnconf);
-      return true;
-   }
-
-   return false;
-}
-
 void makefile(vector<string>& argv) {
    string sys_call = "vfnmkmc";
    for (int i = 0; i < argv.size(); i++)
@@ -159,8 +121,25 @@ void makefile(vector<string>& argv) {
 }
 
 void build(vector<string>& argv) {
-   if (new_makefile() || argv.size() > 0)
+   map<string, string> vfnconf;
+   if (!get_vfnmkmc_conf(vfnconf)) {
       makefile(argv);
+      require(get_vfnmkmc_conf(vfnconf));
+      vfnconf["src_files"] = get_src_files(vfnconf["src_directory"]);
+      save_vfnmkmc_conf(vfnconf);
+   }
+   else {
+      // vfnmkmc.conf was read, check if current source file listing matches
+      // the one in vfnconf.
+      string new_src_files = get_src_files(vfnconf["src_directory"]);
+      if (vfnconf["src_files"] != new_src_files) {
+         // if no match set new_src_files and call vfnmake
+         vfnconf["src_files"] = new_src_files;
+         save_vfnmkmc_conf(vfnconf);
+         makefile(argv);
+      }
+   }
+
    cout << "mc::build: calling `make`.\n";
    require(system("make"));
 }
