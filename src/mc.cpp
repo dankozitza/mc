@@ -213,6 +213,9 @@ void runtimeavg(vector<string>& argv) {
       system(system_call.c_str());
       end = omp_get_wtime();
 
+      cout << "mc::runtimeavg: execution time for run " << j + 1 << "/";
+      cout << runs << " (seconds): `" << end - start << "`.\n";
+
       if (average != 0)
          average = (average + (end - start)) / 2;
       else
