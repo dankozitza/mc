@@ -21,16 +21,6 @@ namespace tools {
    // utils.cpp
    bool get_vfnmkmc_conf(map<string, string>& config);
    bool save_vfnmkmc_conf(map<string, string>& config);
-   void get_includes(vector<string>& includes, string fname);
-   void get_func_defs(vector<string>& definitions, string fname);
-   void form_scoped_declarations(
-         map<string, vector<string>> &sd,
-         vector<string> defs);
-   void update_ns_or_class(
-         string ns_c_name,
-         vector<string> new_declarations,
-         string fname);
-   bool find_in_file(string str_re, string fname);
    string get_src_files(string src_dir);
 
    // system.cpp
@@ -58,6 +48,7 @@ namespace tools {
          string str_re,
          string fmt,
          regex_constants::match_flag_type mf = regex_constants::match_default);
+   bool find_in_file(string str_re, string fname);
    void test_matches();
    void test_replace();
 

@@ -13,8 +13,6 @@ mc command [arguments]
 ```text
    build      - Calls vfnmkmc [arguments] (if needed) then calls make.
    cnt        - Counts the number of lines in each of the source files.
-   dec        - Ensures that all the functions listed in the given c++
-              - source files are declared properly.
    env        - Displays the variables read from vfnmkmc.conf.
    makefile   - Creates a make file by calling vfnmkmc [arguments].
    mkreadme   - Make a README.md file from ./program [arguments].

@@ -21,7 +21,6 @@ using namespace tools;
 
 void build(vector<string>& argv);
 void cnt();
-void dec(vector<string>& argv);
 void env();
 void makefile(vector<string>& argv);
 void mkreadme(vector<string>& argv);
@@ -76,12 +75,6 @@ int main(int argc, char *argv[]) {
       runtimeavg,
       "Get the average time of multiple run executions.",
       "runtimeavg [RUNS=10, [arguments]]");
-   cmds.handle(
-      "dec",
-      dec,
-      "Ensures that all the functions listed in the given c++ "
-      "source files are declared properly.",
-      "dec CPP_FILE");
    cmds.handle(
       "env",
       env,
@@ -167,7 +160,6 @@ void run(vector<string>& argv) {
 
 void runtime(vector<string>& argv) {
    double start, end;
-
    vector<string> junk;
    build(junk);
    map<string, string> vfnconf;
@@ -225,99 +217,6 @@ void runtimeavg(vector<string>& argv) {
    cout << "mc::runtimeavg: execution time average after ";
    cout << runs << " runs (seconds): `";
    cout << average << "`.\n";
-}
-
-void dec(vector<string>& argv) {
-   vector<string> fnames = argv;
-
-   // get list of all src files
-   if (fnames.size() == 0) {
-      map<string, string> vfnconf;
-      require(get_vfnmkmc_conf(vfnconf));
-      if (!list_dir_r(vfnconf["src_directory"], fnames)) {
-         cerr << "mc::dec: vfnmkmc src_directory `" + vfnconf["src_directory"];
-         cerr << "` does not exist.";
-         return;
-      }
-      vector<string> tmp;
-      for (int i = 0; i < fnames.size(); ++i) {
-         if (matches(fnames[i], R"((\.cpp|\.c)$)")) {
-            tmp.push_back(vfnconf["src_directory"] + "/" + fnames[i]);
-         }
-      }
-      fnames = tmp;
-   }
-
-   cout << "mc::dec: src files found: " << fnames << endl;
-
-   map<string, vector<string>> scopedecs;
-   // vector of all user defined includes found in fnames
-   vector<string> includes; 
-
-   for (int fn_i = 0; fn_i < fnames.size(); fn_i++) {
-      cout << "mc::dec: getting function declarations from `";
-      cout << fnames[fn_i] << "`.\n";
-      if (fnames.size() > 1)
-         cout << "mc::dec: file " << fn_i+1 << " of " << fnames.size() << ".\n";
-
-      vector<string> funcdefs;
-      get_func_defs(funcdefs, fnames[fn_i]);
-      form_scoped_declarations(scopedecs, funcdefs);
-
-      get_includes(includes, fnames[fn_i]);
-   }
-
-   // do this for each namespace found?
-   // ns_c_pair.first is the name of the namespace or class.
-   // ns_c_pair.second is a vector of strings containing the declarations
-   // created by form_scoped_declarations.
-   for (const auto ns_c_pair : scopedecs) {
-
-      cout << "mc::dec: searching for namespace definition called `";
-      cout << ns_c_pair.first << "`.\n";
-
-      // now scopedecs is pupulated with all the scoped declarations found in
-      // the files fnames. Search for the header file by first checking the
-      // user defined includes in the source files for the namespace definition.
-      bool found_header_fname = false;
-      string header_fname;
-
-      // TODO: should try the src dir from all source files given
-      string src_dir = fnames[0];
-      replace_first(src_dir, R"([^/]+$)", "");
-
-      for (const auto inc : includes) {
-         // TODO: make sure this matches what we want
-         string str_re = "^(namespace|class) " + ns_c_pair.first + "\\W";
-         cout << "mc::dec: trying regex `" << str_re << "` in file `";
-         cout << src_dir << inc << "`.\n";
-         // TODO: make sure str_re is properly escaped
-         if (find_in_file(str_re, src_dir + inc)) {
-            cout << "   found the header file!\n";
-            found_header_fname = true;
-            header_fname = src_dir + inc;
-            break;
-         }
-      }
-
-      // TODO: finish all these ways of searching for the header_fname
-      //          - replace the extention of fnames with hpp then h
-      //          - replace the extention and move up one dir
-      //          - look in the fnames files themselves
-      //          - check every file found in the src dir
-
-      cout << "mc::dec: new_declarations:\n\n";
-      for (const auto item : ns_c_pair.second)
-         cout << item << endl;
-
-      cout << endl;
-
-      require(
-         found_header_fname,
-         "mc::dec: could not find namespace `" + ns_c_pair.first + "`.");
-
-      update_ns_or_class(ns_c_pair.first, ns_c_pair.second, header_fname);
-   }
 }
 
 void env() {

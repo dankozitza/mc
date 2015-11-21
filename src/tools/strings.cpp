@@ -195,8 +195,6 @@ bool tools::find_in_file(string str_re, string fname) {
       getline(ifh, line);
    
       if (matches(line, str_re)) {
-         cout << "   matched line: `" << line << "`.\n";
-
          ifh.close();
          return true;
       }
