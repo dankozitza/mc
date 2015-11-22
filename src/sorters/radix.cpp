@@ -40,8 +40,7 @@ std::vector<size_t> radix_sort(const C& data) {
    std::vector<size_t> pos(data.size());
    std::iota(pos.begin(), pos.end(), 0);
 
-   size_t width = std::max_element(data.begin(), data.end(), 
-shorter())->size();
+   size_t width = std::max_element(data.begin(), data.end(), shorter())->size();
 
    for (long digit = long(width) - 1; digit >= 0; --digit)
       radix_sort<R>(pos, data, size_t(digit));
