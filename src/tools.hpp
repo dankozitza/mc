@@ -11,7 +11,7 @@
 
 #include <iostream>
 #include <map>
-#include <regex>
+//#include <regex>
 #include <vector>
 
 using namespace std;
@@ -38,19 +38,25 @@ namespace tools {
 
    // strings.cpp
    string fold(int indent_width, int max_line_width, string s);
-   bool matches(string s, string str_re);
-   bool matches(string results[], string s, string str_re);
-   bool matches(vector<string>& results, string s, string str_re);
-   bool matches(smatch& sm, string s, string str_re);
-   bool replace_first(string &s, string str_re, string fmt);
-   bool replace_all(
-         string &s,
-         string str_re,
-         string fmt,
-         regex_constants::match_flag_type mf = regex_constants::match_default);
-   bool find_in_file(string str_re, string fname);
-   void test_matches();
-   void test_replace();
+   //bool matches(string s, string str_re);
+   //bool matches(string results[], string s, string str_re);
+   //bool matches(vector<string>& results, string s, string str_re);
+   //bool matches(smatch& sm, string s, string str_re);
+   //bool replace_first(string &s, string str_re, string fmt);
+   //bool replace_all(
+   //      string &s,
+   //      string str_re,
+   //      string fmt,
+   //      regex_constants::match_flag_type mf = regex_constants::match_default);
+   //bool find_in_file(string str_re, string fname);
+   //void test_matches();
+   //void test_replace();
+
+   // pcre2.cpp
+   bool pmatches(string s, string str_re);
+   bool pmatches(string results[], string s, string str_re);
+   bool pmatches(string results[], string s, string str_re, bool get_res);
+   void test_pmatches();
 
    // vectors.cpp
    istream& operator>>(istream& is, vector<string>& v);

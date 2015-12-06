@@ -7,6 +7,7 @@
 //
 
 #include <csignal>
+#include <cstdlib>
 #include <dirent.h>
 #include <fstream>
 #include <iomanip>
@@ -18,6 +19,8 @@
 #include "sorters.hpp"
 
 using namespace tools;
+
+typedef map<string, string>::iterator map_iter;
 
 void build(vector<string>& argv);
 void cnt();
@@ -224,9 +227,13 @@ void env() {
    require(get_vfnmkmc_conf(vfnconf));
 
    cout << "\nvfnmkmc.conf:\n\n";
-   for (const auto item : vfnconf) {
-      cout << item.first << ": " << item.second << "\n";
-   }
+   //for (const auto item : vfnconf) {
+   //   cout << item.first << ": " << item.second << "\n";
+   //}
+
+   for (map_iter it = vfnconf.begin(); it != vfnconf.end(); ++it)
+      cout << it->first << ": " << it->second << "\n";
+
    cout << "\n";
 }
 
@@ -266,7 +273,7 @@ void cnt() {
 
    vector<string> new_contents;
    for (int i = 0; i < contents.size(); ++i) {
-      if (matches(contents[i], R"((\.cpp|\.c|\.hpp|\.h)$)")) {
+      if (pmatches(contents[i], "(\\.cpp|\\.c|\\.hpp|\\.h)$")) {
          new_contents.push_back(contents[i]);
       }
    }
@@ -286,7 +293,7 @@ void cnt() {
    for (int i = 0; i < contents.size(); ++i) {
       string fname = src_dir + "/" + contents[i];
 
-      fh.open(fname, ifstream::in);
+      fh.open(fname.c_str(), ifstream::in);
       if (!fh.is_open()) {
          cout << "mc::cnt: could not open file: `" << fname << "`\n";
          continue;

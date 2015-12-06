@@ -25,6 +25,8 @@ class commands {
          string description;
       };
 
+      typedef map<string, Command>::iterator cmds_iter;
+
       map<string, Command> cmds;
       string               cmds_help;
       string               program_name;

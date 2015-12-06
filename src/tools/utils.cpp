@@ -29,7 +29,7 @@ bool tools::get_vfnmkmc_conf(map<string, string>& config) {
       getline(fh, line);
 
       string m[3];
-      if (matches(m, line, R"(^\s*([^:]*):\s*(.*)$)"))
+      if (pmatches(m, line, R"(^\s*([^:]*):\s*(.*)$)"))
          config[m[1]] = m[2];
    }
 
@@ -66,10 +66,10 @@ string tools::get_src_files(string src_dir) {
    sorters::radix(files);
    if (files.size() > 0) {
       for (int i = 0; i < files.size() - 1; ++i) {
-         if (matches(files[i], R"((\.cpp|\.c|\.hpp|\.h)$)"))
+         if (pmatches(files[i], R"((\.cpp|\.c|\.hpp|\.h)$)"))
             src_files += files[i] + " ";
       }
-      if (matches(files[files.size() - 1], R"((\.cpp|\.c|\.hpp|\.h)$)"))
+      if (pmatches(files[files.size() - 1], R"((\.cpp|\.c|\.hpp|\.h)$)"))
          src_files += files[files.size() - 1];
    }
 
