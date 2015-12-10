@@ -5,6 +5,7 @@
 //
 
 #include <csignal>
+#include <cstdlib>
 #include <dirent.h>
 #include "../tools.hpp"
 
