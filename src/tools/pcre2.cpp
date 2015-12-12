@@ -18,7 +18,27 @@ bool tools::pmatches(string results[], string s, string str_re) {
    return pmatches(results, s, str_re, true);
 }
 
+bool tools::pmatches(vector<string> &results, string s, string str_re) {
+   return pmatches(results, s, str_re, true);
+}
+
 bool tools::pmatches(string results[], string s, string str_re, bool get_res) {
+   vector<string> m;
+   if (!pmatches(m, s, str_re, get_res))
+      return false;
+
+   for (size_t i = 0; i < m.size(); ++i)
+      results[i] = m[i];
+   return true;
+}
+
+bool tools::pmatches(
+      vector<string> &results,
+      string s,
+      string str_re,
+      bool get_res) {
+
+   results.clear();
    pcre2_code *re;
 
    // PCRE2_SPTR is a pointer to unsigned code units of
@@ -92,7 +112,7 @@ bool tools::pmatches(string results[], string s, string str_re, bool get_res) {
       assert(rc != 0);
 
       for (int i = 0; i < rc; ++i) {
-         results[i] = "";
+         results.push_back("");
          PCRE2_SPTR substring_start = subject + ovector[2*i];
          size_t substring_length = ovector[2*i+1] - ovector[2*i];
          for (int j = 0; j < substring_length; ++j)
@@ -128,4 +148,12 @@ void tools::test_pmatches() {
 
    if (am[2] != "")
       cout << "test failed!, match 2 [" << am[2] << "] did not match!\n";
+}
+
+bool tools::replace_first(string &s, string str_re, string rpl) {
+   return false;
+}
+
+bool tools::replace_all(string &s, string str_re, string rpl) {
+   return false;
 }
