@@ -10,7 +10,7 @@ OBJS=objs/commands.o objs/mc.o objs/radix.o objs/pcre2.o objs/strings.o objs/sys
 .PHONY: all
 all: objs mc
 
-./mc: deps/vfnmkmc/installed deps/pcre2/installed $(OBJS)
+./mc:  $(OBJS)
 	@ echo "    LINK ./mc"
 	@ $(CXX) $(OBJS) -o "./mc" $(LFLAGS)
 
