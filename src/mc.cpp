@@ -110,7 +110,7 @@ int main(int argc, char *argv[]) {
 void makefile(vector<string>& argv) {
    string sys_call = "vfnmkmc";
    for (int i = 0; i < argv.size(); i++)
-      sys_call += " " + argv[i];
+      sys_call += " \"" + argv[i] + "\"";
 
    cout << "mc::makefile: calling `" << sys_call << "`.\n";
    require(system(sys_call.c_str()));
@@ -155,7 +155,7 @@ void run(vector<string>& argv) {
    string system_call = "./";
    system_call += vfnconf["name"];
    for (int i = 0; i < argv.size(); i++)
-      system_call += " " + argv[i];
+      system_call += " \"" + argv[i] + "\"";
 
    cout << "mc::run: calling `" << system_call << "`.\n";
    system(system_call.c_str());
@@ -171,7 +171,7 @@ void runtime(vector<string>& argv) {
    string system_call = "./";
    system_call += vfnconf["name"];
    for (int i = 0; i < argv.size(); i++)
-      system_call += " " + argv[i];
+      system_call += " \"" + argv[i] + "\"";
    cout << "mc::runtime: calling `" << system_call << "`.\n";
 
    start = omp_get_wtime();
@@ -198,7 +198,7 @@ void runtimeavg(vector<string>& argv) {
    string system_call = "./";
    system_call += vfnconf["name"];
    for (int z = 1; z < argv.size(); z++)
-      system_call += " " + argv[z];
+      system_call += " \"" + argv[z] + "\"";
 
    for(int j = 0; j < runs; ++j) {
       cout << "mc::runtimeavg: starting run " << j + 1 << "/" << runs << ".\n";
@@ -247,7 +247,7 @@ void mkreadme(vector<string>& argv) {
 
    sys_call = "./" + vfnconf["name"];
    for (int i = 0; i < argv.size(); ++i)
-      sys_call += " " + argv[i];
+      sys_call += " \"" + argv[i] + "\"";
    sys_call += " >> README.md";
 
    cout << "mc::mkreadme: calling `" << sys_call << "`.\n";
