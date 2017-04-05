@@ -1,16 +1,16 @@
-# 65f6f6650d611934e4e250f53df7cf7e
+# 6dbc6c3cd3f0f995e773ca08146ff0d8
 # Generated with vfnmkmc by the mc program.
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
-LFLAGS= -l gomp -l pcre2-8
-OBJS=objs/commands.o objs/mc.o objs/radix.o objs/pcre2.o objs/strings.o objs/system.o objs/utils.o objs/vectors.o
+LFLAGS= -l gomp -l pcre++
+OBJS=objs/commands.o objs/mc.o objs/radix.o objs/pcre_utils.o objs/utils.o objs/vectors.o objs/doubles.o objs/system.o objs/strings.o
 
 
 .PHONY: all
 all: objs mc
 
-./mc:  $(OBJS)
+./mc: deps/vfnmkmc/installed $(OBJS)
 	@ echo "    LINK ./mc"
 	@ $(CXX) $(OBJS) -o "./mc" $(LFLAGS)
 
@@ -23,15 +23,9 @@ objs/mc.o: src/mc.cpp src/commands.hpp src/tools.hpp src/sorters.hpp
 objs/radix.o: src/sorters/radix.cpp src/sorters/../sorters.hpp
 	@ echo "    CXX  src/sorters/radix.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/sorters/radix.cpp" -o $@
-objs/pcre2.o: src/tools/pcre2.cpp src/tools/../tools.hpp
-	@ echo "    CXX  src/tools/pcre2.cpp"
-	@ $(CXX) $(CFLAGS) -c "src/tools/pcre2.cpp" -o $@
-objs/strings.o: src/tools/strings.cpp src/tools/../tools.hpp
-	@ echo "    CXX  src/tools/strings.cpp"
-	@ $(CXX) $(CFLAGS) -c "src/tools/strings.cpp" -o $@
-objs/system.o: src/tools/system.cpp src/tools/../tools.hpp
-	@ echo "    CXX  src/tools/system.cpp"
-	@ $(CXX) $(CFLAGS) -c "src/tools/system.cpp" -o $@
+objs/pcre_utils.o: src/tools/pcre_utils.cpp src/tools/../tools.hpp
+	@ echo "    CXX  src/tools/pcre_utils.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools/pcre_utils.cpp" -o $@
 objs/utils.o: src/tools/utils.cpp src/tools/../sorters.hpp \
  src/tools/../tools.hpp
 	@ echo "    CXX  src/tools/utils.cpp"
@@ -39,6 +33,15 @@ objs/utils.o: src/tools/utils.cpp src/tools/../sorters.hpp \
 objs/vectors.o: src/tools/vectors.cpp src/tools/../tools.hpp
 	@ echo "    CXX  src/tools/vectors.cpp"
 	@ $(CXX) $(CFLAGS) -c "src/tools/vectors.cpp" -o $@
+objs/doubles.o: src/tools/doubles.cpp src/tools/../tools.hpp
+	@ echo "    CXX  src/tools/doubles.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools/doubles.cpp" -o $@
+objs/system.o: src/tools/system.cpp src/tools/../tools.hpp
+	@ echo "    CXX  src/tools/system.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools/system.cpp" -o $@
+objs/strings.o: src/tools/strings.cpp src/tools/../tools.hpp
+	@ echo "    CXX  src/tools/strings.cpp"
+	@ $(CXX) $(CFLAGS) -c "src/tools/strings.cpp" -o $@
 
 objs:
 	@ mkdir "objs"
@@ -79,7 +82,7 @@ install: all
 .PHONY: uninstall
 uninstall:
 	@ cd deps/vfnmkmc; make clean; make uninstall;
-	@ cd deps/pcre2; make clean; make uninstall;
+	@ cd deps/pcre2-10.20; make clean; make uninstall;
 	@ rm $(PREFIX)/bin/mc
 	@ echo "[1;32m*[0m mc removed from $(PREFIX)/bin[0m"
 
@@ -95,19 +98,18 @@ deps/vfnmkmc/installed: deps/vfnmkmc
 	@ cd deps/vfnmkmc; make install
 	@ touch deps/vfnmkmc/installed
 
-deps/pcre2: deps
-	@ echo "    GET deps/pcre2"
-	@ cd deps; wget ftp://ftp.csx.cam.ac.uk:21/pub/software/programming/pcre/pcre2-10.20.zip;
-	@ cd deps; unzip pcre2-10.20.zip;
-	@ cd deps; rm -f pcre2-10.20.zip;
-	@ cd deps; mv pcre2-10.20 pcre2;
-
-deps/pcre2/installed: deps/pcre2
-	@ echo "    CONFIGURE deps/pcre2"
-	@ echo "    MAKE INSTALL deps/pcre2"
-	@ cd deps/pcre2; ./configure --prefix=/usr;
-	@ cd deps/pcre2; make install;
-	@ touch deps/pcre2/installed;
+#deps/pcre2-10.20: deps
+#	@ echo "    GET deps/pcre2-10.20"
+#	@ cd deps; wget ftp://ftp.csx.cam.ac.uk:21/pub/software/programming/pcre/pcre2-10.20.zip;
+#	@ cd deps; unzip pcre2-10.20.zip;
+#	@ cd deps; rm -f pcre2-10.20.zip;
+#
+#deps/pcre2-10.20/installed: deps/pcre2-10.20
+#	@ echo "    CONFIGURE deps/pcre2-10.20"
+#	@ echo "    MAKE INSTALL deps/pcre2-10.20"
+#	@ cd deps/pcre2-10.20; ./configure --prefix=/usr;
+#	@ cd deps/pcre2-10.20; make install;
+#	@ touch deps/pcre2-10.20/installed;
 
 
 .PHONY: check-syntax

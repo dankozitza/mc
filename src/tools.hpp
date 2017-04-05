@@ -11,7 +11,8 @@
 
 #include <iostream>
 #include <map>
-//#include <regex>
+#include <stdio.h>
+#include <stdarg.h>
 #include <vector>
 
 using namespace std;
@@ -24,6 +25,9 @@ namespace tools {
    string get_src_files(string src_dir);
 
    // system.cpp
+   typedef char const * Error;
+   Error error(string message = "");
+   Error errorf(char const * format, ...);
    void signals_callback_handler(int signum);
    void signals(int sig, void (*callback_func)(int));
    bool require(int sys_exit_val, string msg = "");
@@ -35,6 +39,7 @@ namespace tools {
          string dir_name,
          vector<string>& contents,
          string prefix);
+   Error read_file(string file_path, string& contents);
 
    // strings.cpp
    string fold(int indent_width, int max_line_width, string s);
@@ -63,13 +68,15 @@ namespace tools {
          bool get_res);
    void test_pmatches();
    bool replace_first(string &s, string str_re, string rpl);
-   bool replace_all(string &s, string str_re, string rpl);
-
+   size_t replace_all(string &s, string str_re, string rpl);
 
    // vectors.cpp
    istream& operator>>(istream& is, vector<string>& v);
    ostream& operator<<(ostream& os, vector<string>& v);
    void vectors_test();
+
+   // doubles.cpp
+   bool equal(double const &d1, double const &d2, double epsilon = 0.0001);
 }
 
 #endif

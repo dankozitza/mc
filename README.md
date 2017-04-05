@@ -29,3 +29,8 @@ Use `mc help [command]` for more information about a command.
 ```bash
 make install
 ```
+
+### Dependencies
+```text
+c++11, pcre++, gomp
+```
