@@ -3,7 +3,7 @@
 PREFIX=/usr/local
 CFLAGS=-O$(O)  -std=c++11
 O=2
-LFLAGS= -l gomp -l pcre++
+LFLAGS= -l gomp
 OBJS=objs/commands.o objs/mc.o objs/radix.o objs/pcre_utils.o objs/utils.o objs/vectors.o objs/doubles.o objs/system.o objs/strings.o
 
 

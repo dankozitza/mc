@@ -33,7 +33,7 @@ void runtime(vector<string>& argv);
 void runtimeavg(vector<string>& argv);
 
 int main(int argc, char *argv[]) {
-   vector<string> Argv;
+   vector<string> Argv(0);
    string         cmd_str;
 
    signal(SIGINT, signals_callback_handler);
@@ -256,7 +256,7 @@ void mkreadme(vector<string>& argv) {
 
 void cnt() {
    map<string, string> vfnconf;
-   vector<string> contents;
+   vector<string> contents(0);
    unsigned int total_lines = 0;
    string src_dir;
 
@@ -271,7 +271,7 @@ void cnt() {
       return;
    }
 
-   vector<string> new_contents;
+   vector<string> new_contents(0);
    for (int i = 0; i < contents.size(); ++i) {
       if (pmatches(contents[i], "(\\.cpp|\\.c|\\.hpp|\\.h)$")) {
          new_contents.push_back(contents[i]);
