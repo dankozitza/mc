@@ -2,13 +2,13 @@
 
 mc is a tool for managing c++ source code.
 
-###Usage:
+### Usage:
 
 ```bash
 mc command [arguments]
 ```
 
-###Commands:
+### Commands:
 
 ```text
    build      - Calls vfnmkmc [arguments] (if needed) then calls make.
