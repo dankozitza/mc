@@ -76,15 +76,15 @@ superclean: clean
 .PHONY: install
 install: all
 	@ install -D -m 755 mc $(PREFIX)/bin/mc
-	@ echo "[1;32m*[0m mc installed in $(PREFIX)/bin"
-	@ echo "[1muse \`make uninstall\` to remove mc[0m"
+	@ echo "[1;32m*[0m mc installed in $(PREFIX)/bin"
+	@ echo "[1muse \`make uninstall\` to remove mc[0m"
 
 .PHONY: uninstall
 uninstall:
 	@ cd deps/vfnmkmc; make clean; make uninstall;
 	@ cd deps/pcre2-10.20; make clean; make uninstall;
 	@ rm $(PREFIX)/bin/mc
-	@ echo "[1;32m*[0m mc removed from $(PREFIX)/bin[0m"
+	@ echo "[1;32m*[0m mc removed from $(PREFIX)/bin[0m"
 
 deps:
 	@ mkdir deps
@@ -115,3 +115,4 @@ deps/vfnmkmc/installed: deps/vfnmkmc
 .PHONY: check-syntax
 check-syntax:
 	$(CXX) $(CFLAGS) -fsyntax-only -Wall -o /dev/null -S src/*
+

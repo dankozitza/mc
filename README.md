@@ -12,9 +12,9 @@ mc command [arguments]
 
 ```text
    build      - Calls vfnmkmc [arguments] (if needed) then calls make.
-   cnt        - Counts the number of lines in each of the source files.
+   cnt        - Counts the number of lines in every source file.
    env        - Displays the variables read from vfnmkmc.conf.
-   makefile   - Creates a Makefile by calling vfnmkmc [arguments].
+   makefile   - Make a Makefile by calling vfnmkmc [arguments].
    mkreadme   - Make a README.md file from ./program [arguments].
    rebuild    - Calls make clean, vfnmkmc [arguments] (if needed), then make.
    run        - Calls vfnmkmc (if needed), make, then ./program [arguments].
@@ -31,6 +31,7 @@ make install
 ```
 
 ### Dependencies
+
 ```text
 c++11, gomp
 ```
