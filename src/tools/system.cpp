@@ -178,8 +178,7 @@ void tools::signals(int sig, void (*callback_func)(int)) {
 //
 // exit if sys_exit_val is not zero.
 //
-bool tools::require(int sys_exit_val, string msg)
-{
+bool tools::require(int sys_exit_val, string msg) {
    if (sys_exit_val != 0) {
       if (msg != "") {
          cout << msg << "\n";
@@ -187,6 +186,9 @@ bool tools::require(int sys_exit_val, string msg)
       cout << "tools::require: got exit value `" << sys_exit_val << "`, ";
       cout << "exiting.\n";
       exit(EXIT_FAILURE);
+   }
+   else {
+      return true;
    }
 }
 
@@ -202,6 +204,9 @@ bool tools::require(bool func_return_val, string msg) {
       cout << "tools::require: got return value `false`, ";
       cout << "exiting.\n";
       exit(EXIT_FAILURE);
+   }
+   else {
+      return true;
    }
 }
 
@@ -255,7 +260,7 @@ bool tools::list_dir_r(string dir_name, vector<string>& contents) {
    bool ret = list_dir_r(dir_name, contents, "");
    if (!ret) {
       cout << "tools::list_dir_r: could not open directory: `" << dir_name;
-      cout << "`\n";
+      cout << "`" << endl;
    }
    return ret;
 }

@@ -112,7 +112,7 @@ void makefile(vector<string>& argv) {
    for (int i = 0; i < argv.size(); i++)
       sys_call += " \"" + argv[i] + "\"";
 
-   cout << "mc::makefile: calling `" << sys_call << "`.\n";
+   cout << "mc::makefile: calling `" << sys_call << "`." << endl;
    require(system(sys_call.c_str()));
 }
 
@@ -120,6 +120,7 @@ void build(vector<string>& argv) {
    map<string, string> vfnconf;
    if (!get_vfnmkmc_conf(vfnconf)) {
       makefile(argv);
+      cout << "mc::build: reading vfnmkmc.conf." << endl;
       require(get_vfnmkmc_conf(vfnconf));
       vfnconf["src_files"] = get_src_files(vfnconf["src_directory"]);
       save_vfnmkmc_conf(vfnconf);
@@ -136,7 +137,7 @@ void build(vector<string>& argv) {
       }
    }
 
-   cout << "mc::build: calling `make`.\n";
+   cout << "mc::build: calling `make`." << endl;
    require(system("make"));
 }
 
@@ -224,6 +225,7 @@ void runtimeavg(vector<string>& argv) {
 
 void env() {
    map<string, string> vfnconf;
+   cout << "mc::env: reading vfnmkmc.conf." << endl;
    require(get_vfnmkmc_conf(vfnconf));
 
    cout << "\nvfnmkmc.conf:\n\n";
@@ -239,6 +241,7 @@ void env() {
 
 void mkreadme(vector<string>& argv) {
    map<string, string> vfnconf;
+   cout << "mc::mkreadme: reading vfnmkmc.conf." << endl;
    require(get_vfnmkmc_conf(vfnconf));
 
    string sys_call = "echo '# " + vfnconf["name"] + "' > README.md";

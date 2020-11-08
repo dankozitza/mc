@@ -21,7 +21,7 @@ bool tools::get_vfnmkmc_conf(map<string, string>& config) {
    ifstream fh;
    fh.open("vfnmkmc.conf", ifstream::in);
    if (!fh.is_open()) {
-      cout << "tools::get_vfnmkmc_conf: couldn't open vfnmkmc.conf.\n";
+      cout << "tools::get_vfnmkmc_conf: couldn't open vfnmkmc.conf." << endl;
       return false;
    }
    while(fh.peek() != EOF) {
@@ -63,6 +63,7 @@ void destroy_targets() {
 string tools::get_src_files(string src_dir) {
    string src_files;
    vector<string> files;
+   cout << "tools::get_src_files: calling list_dir_r(\"" << src_dir << "\")\n";
    require(list_dir_r(src_dir, files));
 
    sorters::radix(files);
