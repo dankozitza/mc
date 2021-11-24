@@ -164,8 +164,8 @@ void run(vector<string>& argv) {
 
 void runtime(vector<string>& argv) {
    double start, end;
-   vector<string> junk;
-   build(junk);
+   vector<string> empty_v;
+   build(empty_v);
    map<string, string> vfnconf;
    require(get_vfnmkmc_conf(vfnconf));
 
@@ -187,8 +187,8 @@ void runtimeavg(vector<string>& argv) {
    double start, end, average = 0;
    int runs;
 
-   vector<string> junk;
-   build(junk);
+   vector<string> empty_v;
+   build(empty_v);
    map<string, string> vfnconf;
    require(get_vfnmkmc_conf(vfnconf));
    if (argv.size() < 1)
